@@ -1,9 +1,6 @@
 # MacOS Directory Config
 .DS_Store
 
-# Too Large of Starter CSV
-dohmh_export.csv
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
