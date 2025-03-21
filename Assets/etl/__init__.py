@@ -54,7 +54,7 @@ def update_db(links: dict[Path]):
     L.newRestauants(clean_df)
     return 0
 
-def testing_db(links: dict[Path], csv_path: Path):
+def testing_create(links: dict[Path], csv_path: Path):
     # Sleeping between API calls
     dohmh_df = E.extraction('testing', csv_path)
     sleep(10)
@@ -74,6 +74,22 @@ def testing_db(links: dict[Path], csv_path: Path):
     L.newRestauants(clean_df)
     return 0
 
+def testing_update(links: dict[Path], csv_path: Path):
+    # Sleeping between API calls
+    dohmh_df = E.extraction('testing', csv_path)
+    sleep(10)
+    drop_dict = {'name': fastfood_csv(links['fast_food']).values.tolist()}
+    keep_dict = {'cuisine': T.grab_list(links['cuisine'])}
+    clean_df, boro_df, cuisine_df = \
+        T.transformation(
+            dohmh_df
+            ,links['cuisine']
+            ,drop_dict
+            ,keep_dict
+            ,forge_all = True
+        )
+    db.Base.metadata.create_all(db.engine)
+    L.newRestauants(clean_df)
 
 if __name__ == '__main__':
     print('Not scripted yet.')

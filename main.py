@@ -20,7 +20,9 @@ if __name__ == '__main__':
         'cuisine': Path('Assets/data/cuisine_bins/keep.txt')
         ,'fast_food': Path('Assets/data/clean/fastfood.csv')
     }
-    
-    etl.testing_db(links, Path('Assets/data/clean/dohmh_clean.csv'))
+    if db_path.exists():
+        etl.testing_update(links, Path('Assets/data/clean/dohmh_clean.csv'))
+    else:
+        etl.testing_create(links, Path('Assets/data/clean/dohmh_clean.csv'))
 
     api.app.run(debug = True)
