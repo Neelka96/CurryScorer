@@ -1,6 +1,6 @@
 import pandas as pd
 from sqlalchemy import Table, insert, select, delete
-import database as db
+from . import database as db
 
 # , inspect, create_engine, event, Engine, ForeignKey, Column, Integer, Float, String, DateTime
 # from sqlalchemy.orm import sessionmaker, declarative_base, relationship
@@ -8,14 +8,16 @@ import database as db
 
 def freshTable(TableClass: Table, df: pd.DataFrame) -> int:
     '''Starts from scratch, deletes existing data'''
-    with db.Session() as session:
-        session.execute(delete(TableClass))
-        session.execute(
-            insert(TableClass, df.to_dict('records'))
-        )
-        session.add()
-        session.commit()
-    return 0
+    try:
+        with db.Session() as session:
+            session.execute(delete(TableClass))
+            stmt = insert(TableClass)
+            vals = df.to_dict('records')
+            session.execute(stmt, vals)
+            session.commit()
+        return 0
+    except Exception as e:
+        raise RuntimeError(f'Could not build Fresh Table: {e}')
 
 def getTable(TableClass: Table) -> pd.DataFrame:
     TableClass

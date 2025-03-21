@@ -29,15 +29,14 @@ def grab_list(posix_url: Path | str) -> list:
     '''Reader for various lists that will be used to filter dataframe prenormalization'''
     posix_url = Path(posix_url)
     # Checking for path existence first
-    if posix_url.exists():
+    if not posix_url.exists():
+        raise FileNotFoundError(f'Could not find the file {posix_url}')
+    else:
         try:
             with open(posix_url, 'r') as file:
                 return [line.strip('\n') for line in file]
         except Exception as e:
-            print(f'ERROR: {e}')
-            return -1
-    else:
-        return -1
+            raise RuntimeError(f'Error reading {posix_url}: {e}')
     
 def set_list(posix_url: Path | str, new_list: list) -> list:
     '''Writer for various lists that will be used to filter dataframe prenormalization'''
@@ -48,7 +47,7 @@ def set_list(posix_url: Path | str, new_list: list) -> list:
             file.writelines(new_list)
         return 0
     except Exception as e:
-        print(f'ERROR: {e}')
+        print(f'set_list() ERROR: \n{e}')
         return -1
 
 # -------------------------------------------------------------------------------------------
@@ -61,21 +60,26 @@ def clean_df(
     '''Cleans pandas DataFrame by calling `clean_helper()` and dropping/keeping only objects passed into correctly designated arguments.'''
 
     # Calls clean_helper() on df to drop duplicates, sort columns, and correct datetime datetype
-    if df:
+    try:
         df = clean_helper(df)
+    except Exception as e:
+        raise RuntimeError(f'Could not process clean_helper on df: {e}')
 
     # Performs filtering loops by dictionary passed into argument (if no arguments -> no filtering occurs)
     # If in drop_dict then drop it
-    if drop_dict:
-        for name, dropList in drop_dict:
+    try:
+        for name, dropList in drop_dict.items():
             dropLogic = ~df[name].isin(dropList)
             df = df.loc[dropLogic].copy()
-
+    except Exception as e:
+        raise RuntimeError(f'Could not process dropList: {e}')
     # If in keep_dict then keep it
-    if keep_dict:
-        for name, keepList in keep_dict:
+    try:
+        for name, keepList in keep_dict.items():
             keepLogic = df[name].isin(keepList)
             df = df.loc[keepLogic].copy()
+    except Exception as e:
+        raise RuntimeError(f'Could not process dropList: {e}')
 
     return df.copy()
 
@@ -102,8 +106,7 @@ def map_borough(
         try:
             boros = denorm_df['borough'].unique()
         except Exception as e:
-            print(f'Sorry, the following error has occured: \n{e}')
-            return -1
+            raise RuntimeError(f'Could not extract boroughs from df: {e}')
     return create_dict(boros, lambda num: f'B{num}')
 
 
@@ -122,13 +125,11 @@ def map_cuisine(
         try:
             cuisines = denorm_df['cuisine'].unique()
         except Exception as e:
-            print(f'ERROR: \n{e}')
-            return -1
+            raise RuntimeError(f'Could not extract cuisines from df: {e}')
     try:
         return create_dict(cuisines, lambda num: f'C{num}')
     except Exception as e:
-        print(f'ERROR: \n{e}')
-        return -1
+        raise RuntimeError(f'Could not create dictionary from cuisines list: {e}')
 
 
 def create_ref_table(

@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import io
 import datetime as dt
+from pathlib import Path
 
 
 def get_df(url: str, params: dict = None) -> pd.DataFrame:
@@ -26,7 +27,7 @@ def where_filter(numYears: int = 2) -> str:
 
 
 MAX_LIMIT = 200000
-def extraction(dataSet: str, limit: str = MAX_LIMIT) -> pd.DataFrame:
+def extraction(dataSet: str | Path, csv_Test: str = None, limit: str = MAX_LIMIT) -> pd.DataFrame:
     # Conditional switch for 2 datasets
     if dataSet == 'dohmh':
     # Build select statement with aliases
@@ -60,6 +61,9 @@ def extraction(dataSet: str, limit: str = MAX_LIMIT) -> pd.DataFrame:
             '$limit': limit
         }
         url = 'https://data.cityofnewyork.us/resource/qgc5-ecnb.csv'
+
+    elif dataSet == 'testing':
+        return pd.read_csv(csv_Test)
 
     # Return extracted and file-formatted data
     return get_df(url, params)

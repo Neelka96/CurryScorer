@@ -29,7 +29,7 @@ class Restaurants(Base):
     __tablename__ = 'restaurants'
 
     id = Column(Integer, primary_key = True)
-    name = Column(String, nullable = False, unique = True)
+    name = Column(String, nullable = False)
     borough_id = Column(String, ForeignKey('boroughs.borough_id'), nullable = False)
     cuisine_id = Column(String, ForeignKey('cuisines.cuisine_id'), nullable = False)
     inspection_date = \
@@ -37,8 +37,8 @@ class Restaurants(Base):
     lat = Column(Float, nullable = False)
     lng = Column(Float, nullable = False)
 
-    borough = relationship('boroughs', backref = 'restaurants')
-    cuisine = relationship('cuisines', backref = 'restaurants')
+    borough = relationship('Boroughs', backref = 'restaurants')
+    cuisine = relationship('Cuisines', backref = 'restaurants')
 
     def __repr__(self):
         f'<RestaurantTable(id={self.id}, name="{self.name}")>'

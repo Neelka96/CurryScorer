@@ -1,18 +1,26 @@
-import extract as E
-import transform as T
-import database as db
-import load as L
+from Assets import etl
+from Assets.etl import database as db
+from Assets.backend import flask_api as api
 
-from sqlalchemy.ext.automap import automap_base
-from flask import Flask, jsonify, request, abort
-
-
-#     # Build drop lists
-#     if not csvPath.exists() or force_download:
-#         drop_names = Extraction('fast_food')['name'].unique()
-#         pd.Series({'name': drop_names}).to_csv(csvPath, header = True, index = False)
-
-#     drop_names = pd.read_csv(csvPath)
+from pathlib import Path
 
 if __name__ == '__main__':
-    print('Not scripted yet.')
+    # db_path = Path(db.engine.url.database)
+    # links = {
+    #     'cuisine': Path('Assets/data/cuisine_bins/keep.txt')
+    #     ,'fast_food': Path('Assets/data/clean/fastfood.csv')
+    # }
+    # if db_path.exists():
+    #     etl.update_db(links)
+    # else:
+    #     etl.init_db(links)
+
+    db_path = Path(db.engine.url.database)
+    links = {
+        'cuisine': Path('Assets/data/cuisine_bins/keep.txt')
+        ,'fast_food': Path('Assets/data/clean/fastfood.csv')
+    }
+    
+    etl.testing_db(links, Path('Assets/data/clean/dohmh_clean.csv'))
+
+    api.app.run(debug = True)

@@ -1,51 +1,78 @@
-import pandas as pd
+from . import extract as E
+from . import transform as T
+from . import load as L
+from . import database as db
 
-import extract as E
-import transform as T
-import load as L
-import database as db
+import pandas as pd
 from pathlib import Path
 from time import sleep
 
-#     # Build drop lists
-#     if not csvPath.exists() or force_download:
-#         drop_names = Extraction('fast_food')['name'].unique()
-#         pd.Series({'name': drop_names}).to_csv(csvPath, header = True, index = False)
+def fastfood_csv(url: Path = None) -> pd.DataFrame:
+    try:
+        if url.exists():
+            return pd.read_csv(url)
+        else:
+            return E.extraction('fast_food')
+    except Exception as e:
+        raise RuntimeError(f'Could not extract fast_food df: {e}')
 
-#     drop_names = pd.read_csv(csvPath)
-
-def fastfood_csv(csv_path: Path = None) -> pd.DataFrame:
-    if csv_path:
-        url = csv_path
-    else:
-        url = Path('../data/clean/fastfood.csv')
-    
-    if url.exists():
-        return pd.read_csv(url)
-    else:
-        return E.extraction('fast_food')
-    
-
-def init_db():
+# Init database when it doesn't exist
+def init_db(links: dict[Path]):
     # Sleeping between API calls
     dohmh_df = E.extraction('dohmh')
     sleep(10)
-    CUISINE_URL = '../data/cuisine_bins/keep.txt'
-    drop_dict = fastfood_csv().to_dict(orient = 'list')
-    keep_dict = {'cuisine': T.grab_list(CUISINE_URL)}
+    drop_dict = {'name': fastfood_csv(links['fast_food']).values.tolist()}
+    keep_dict = {'cuisine': T.grab_list(links['cuisine'])}
     clean_df, boro_df, cuisine_df = \
         T.transformation(
             dohmh_df
-            ,CUISINE_URL
+            ,links['cuisine']
             ,drop_dict
             ,keep_dict
-            ,forge_all = True)
+            ,forge_all = True
+        )
     db.Base.metadata.create_all(db.engine)
-    
+    L.newBoroughs(boro_df)
+    L.newCuisines(cuisine_df)
+    L.newRestauants(clean_df)
+    return 0
 
+def update_db(links: dict[Path]):
+    # Sleeping between API calls
+    dohmh_df = E.extraction('dohmh')
+    sleep(5)
+    drop_dict = {'name': fastfood_csv(links['fast_food']).values.tolist()}
+    keep_dict = {'cuisine': T.grab_list(links['cuisine'])}
+    clean_df = \
+        T.transformation(
+            dohmh_df
+            ,links['cuisine']
+            ,drop_dict
+            ,keep_dict
+        )
+    db.Base.metadata.create_all(db.engine)
+    L.newRestauants(clean_df)
+    return 0
 
-def update_db():
-    pass
+def testing_db(links: dict[Path], csv_path: Path):
+    # Sleeping between API calls
+    dohmh_df = E.extraction('testing', csv_path)
+    sleep(10)
+    drop_dict = {'name': fastfood_csv(links['fast_food']).values.tolist()}
+    keep_dict = {'cuisine': T.grab_list(links['cuisine'])}
+    clean_df, boro_df, cuisine_df = \
+        T.transformation(
+            dohmh_df
+            ,links['cuisine']
+            ,drop_dict
+            ,keep_dict
+            ,forge_all = True
+        )
+    db.Base.metadata.create_all(db.engine)
+    L.newBoroughs(boro_df)
+    L.newCuisines(cuisine_df)
+    L.newRestauants(clean_df)
+    return 0
 
 
 if __name__ == '__main__':
