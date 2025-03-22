@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 from . import extract as E
-from Assets import config as C
+import config as C 
 
 
 def extraction(dataSet: str | Path) -> pd.DataFrame:

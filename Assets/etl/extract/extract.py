@@ -4,7 +4,7 @@ import io
 import datetime as dt
 from time import sleep
 
-from Assets import config as C
+import config as C
 
 def get_df(url: str, params: dict = None) -> pd.DataFrame:
     '''

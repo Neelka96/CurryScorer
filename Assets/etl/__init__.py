@@ -4,6 +4,10 @@ from . import transform as T
 from . import load as L
 from . import database as db
 
+# FOR TESTING PURPOSES:
+import config as C
+import pandas as pd
+# ---------------------
 
 # Init database when it doesn't exist
 def init_db():
@@ -20,8 +24,11 @@ def init_db():
     # Clean, correct, organize, and normalize using mappings
     clean_df = T.transformation(dohmh_df, boro_map, cuisine_map)
 
+    # Grab population data from extraction (FOR NOW TESTING IS DONE THROUGH CSV)
+    population_dict = pd.read_csv(C.POPULATION_CLEAN).set_index('borough', drop = True).to_dict()
+
     # Forge reference tables using mappings
-    boro_df = T.forge_boroughs(boro_map)
+    boro_df = T.forge_boroughs(boro_map, population_dict)
     cuisine_df = T.forge_cuisines(cuisine_map)
 
     # Create tables with enforced schema, in proper order

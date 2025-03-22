@@ -15,7 +15,7 @@ class Boroughs(Base):
 
     borough_id = Column(String, primary_key = True)
     borough = Column(String, nullable = False)
-    # population = Column(int, nullable = False)
+    population = Column(int, nullable = True)
 
 
 # Secondary ref table for cuisines

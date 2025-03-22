@@ -5,14 +5,14 @@ from pathlib import Path
 
 
 # Paths
-ASSETS_DIR = Path(__file__).resolve().parent    # Base Assets Directory
+ASSETS_DIR = Path(__file__).resolve().parent / 'Assets' # Main Assets Directory
 CLEAN_DATA_DIR = ASSETS_DIR / 'data' / 'clean'  # Assets/data/clean directory
 FASTFOOD_CSV = CLEAN_DATA_DIR / 'fastfood.csv'  # clean/fastfood.csv
-CENSUS_CSV = CLEAN_DATA_DIR / 'NYC_Boroughs_Data.csv'   # clean/NYC_Boroughs_Data.csv
 
 
 # PATHS FOR TESTING PURPOSES
 DOHMH_CLEAN = CLEAN_DATA_DIR / 'dohmh_clean.csv' # clean/dohmh_clean.csv
+POPULATION_CLEAN = CLEAN_DATA_DIR / 'census_population.csv' # clean/census_population.csv
 
 
 # Filter Constants
@@ -31,6 +31,7 @@ API_DELAY = 10  # In seconds, delay upon retry before another request is sent ou
 BOROUGHS = (
     'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island'
 )
+
 CUISINES = (
     'Afghan',
     'African',

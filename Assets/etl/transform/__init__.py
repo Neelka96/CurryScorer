@@ -3,7 +3,7 @@ from time import sleep
 
 from Assets.etl import extract as E
 from . import transform as T
-from Assets import config as C
+import config as C
 
 # Larger Abstractions
 
@@ -29,20 +29,27 @@ def map_cuisine() -> dict:
         raise RuntimeError(f'Could not create dictionary from cuisines list: {e}')
 
 
-def forge_boroughs(map: dict[str, str]) -> pd.DataFrame:
+def forge_boroughs(id_map: dict[str, str], population_map: dict[str, int] = None) -> pd.DataFrame:
     '''
     Wrapper for create_ref_table - Creates new Boroughs table (if needed) through dictionary mappings.
     '''
-    # Call and return a created reference table for boroughs using set variables
-    return T.create_ref_table(map, 'borough', 'borough_id')
+    # Create reference table for boroughs using set variables
+    boroughs_df = T.create_ref_table(id_map, 'borough', 'borough_id')
+
+    # If population passed add to dataframe column
+    if population_map:
+        boroughs_df['population'] = boroughs_df['borough'].map(population_map)
+
+    # Return new boroughs table
+    return boroughs_df
 
 
-def forge_cuisines(map: dict[str, str]) -> pd.DataFrame:
+def forge_cuisines(id_map: dict[str, str]) -> pd.DataFrame:
     '''
     Wrapper for create_ref_table - Creates new Cuisines table (if needed) through dictionary mappings.
     '''
     # Call and return a created reference table for boroughs using set variables
-    return T.create_ref_table(map, 'cuisine', 'cuisine_id')
+    return T.create_ref_table(id_map, 'cuisine', 'cuisine_id')
 
 
 def fastfood_csv() -> pd.DataFrame:
