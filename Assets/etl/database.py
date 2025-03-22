@@ -1,13 +1,13 @@
 # Import Dependencies
 from sqlalchemy import create_engine, event, Engine, ForeignKey, Column, Integer, Float, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
-# from sqlalchemy.ext.automap import automap_base
 
 
 # SQLITE BACKEND ARCHITECTURE
 
 # Create ORM base var
 Base = declarative_base()
+
 
 # Secondary ref table for boroughs
 class Boroughs(Base):
@@ -17,12 +17,14 @@ class Boroughs(Base):
     borough = Column(String, nullable = False)
     # population = Column(int, nullable = False)
 
+
 # Secondary ref table for cuisines
 class Cuisines(Base):
     __tablename__ = 'cuisines'
 
     cuisine_id = Column(String, primary_key = True)
     cuisine = Column(String, nullable = False)
+
 
 # Main Table (Restaurant)
 class Restaurants(Base):
@@ -47,6 +49,7 @@ class Restaurants(Base):
 # Create engine, bind sessions to it, and create tables
 engine = create_engine('sqlite:///courier.sqlite')
 
+# Event listener for engine connection, enforces foreign keys upon connection
 @event.listens_for(Engine, 'connect')
 def enforce_sqlite_fks(dbapi, conn_record):
     cursor = dbapi.cursor()
@@ -55,5 +58,6 @@ def enforce_sqlite_fks(dbapi, conn_record):
 
 Session = sessionmaker(bind = engine)
 
+
 if __name__ == '__main__':
-    pass
+    print('This module is intended to be imported, not run directly.')

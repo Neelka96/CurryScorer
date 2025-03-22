@@ -1,14 +1,13 @@
-# Import Directory Modules for Core Building
+# Import modules for testing
 from . import extract as E
 from . import transform as T
 from . import load as L
 from . import database as db
 
 
-# Init database when it doesn't exist
 def init_db():
-    # Extract main dataset from API
-    dohmh_df = E.extraction('dohmh')
+    # Extract main dataset from CSV
+    dohmh_df = E.extraction('testing')
 
     # Get mappings for boro and cuisine dictionaries
     boro_map = T.map_borough()
@@ -30,8 +29,8 @@ def init_db():
 
 
 def update_db():
-    # Extract main dataset from API
-    dohmh_df = E.extraction('dohmh')
+    # Extract main dataset from CSV
+    dohmh_df = E.extraction('testing')
 
     # Get mappings for boro and cuisine dictionaries
     boro_map = T.map_borough()

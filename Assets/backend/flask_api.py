@@ -120,5 +120,7 @@ def api_cuisine_pie():
         for r in results]
         return jsonify(data)
 
+
+
 if __name__ == '__main__':
-    pass
+    print('This module is intended to be imported, not run directly.')
