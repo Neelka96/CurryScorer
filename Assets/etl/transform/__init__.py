@@ -65,9 +65,7 @@ def transformation(
         ) -> pd.DataFrame:
     
     # Clean df by dropping fastfood names and keeping only restaurants with ethnic cuisines
-    fastFood_names = {'name': fastfood_csv().values.tolist()}  # Names of common fastfood restaurants
-    ethnic_cuisines = {'cuisine': C.CUISINES}   # Names of derived ethnic cuisines
-    df = T.clean_df(df, fastFood_names, ethnic_cuisines)  # Clean df using new dictionaries
+    df = T.clean_df(df, fastfood_csv().values.tolist(), C.CUISINES)  # Clean df using new dictionaries
 
     # Normalize the table twice, once for each reference table
     df = T.normalizeTable(df, boro_dict, 'borough', 'borough_id')

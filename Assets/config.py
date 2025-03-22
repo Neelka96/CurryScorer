@@ -28,8 +28,10 @@ API_DELAY = 10  # In seconds, delay upon retry before another request is sent ou
 
 
 # Transformation Constants
-BOROUGHS = ['Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island']
-CUISINES = [
+BOROUGHS = (
+    'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island'
+)
+CUISINES = (
     'Afghan',
     'African',
     'American',
@@ -83,8 +85,8 @@ CUISINES = [
     'Spanish',
     'Tapas',
     'Thai',
-    'Turkish',
-]
+    'Turkish'
+)
 
 
 if __name__ == '__main__':

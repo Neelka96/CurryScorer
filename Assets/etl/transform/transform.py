@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from typing import Callable
 
 
@@ -26,8 +27,8 @@ def clean_helper(df: pd.DataFrame) -> pd.DataFrame:
 
 def clean_df(
         df: pd.DataFrame
-        ,drop_dict: dict[str:list] = None
-        ,keep_dict: dict[str:list] = None
+        ,junkFood_names: list
+        ,ethnic_cuisines: list
     ) -> pd.DataFrame:
     '''Cleans pandas DataFrame by calling `clean_helper()` and dropping/keeping only objects passed into correctly designated arguments.'''
 
@@ -37,12 +38,8 @@ def clean_df(
     except Exception as e:
         raise RuntimeError(f'Could not process clean_helper on df: {e}')
 
-    # Performs filtering loops by dictionary passed into argument (if no arguments -> no filtering occurs)
-    mask = pd.Series(True, index = df.index)
-    if drop_dict:
-        mask &= [~df[col].isin(dropList) for col, dropList in drop_dict.items()]
-    if keep_dict:
-        mask &= [df[col].isin(keepList) for col, keepList in keep_dict.items()]
+    # Performs filtering by lists passed
+    mask = ~df['name'].isin(junkFood_names) & df['cuisine'].isin(ethnic_cuisines)
 
     return df[mask]
 
