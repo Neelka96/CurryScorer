@@ -18,14 +18,14 @@ def freshTable(TableClass: Table, df: pd.DataFrame) -> int:
 
 
 # Set Wrappers for access and writing using df
-def newRestauants(df: pd.DataFrame) -> int:
-    return freshTable(db.Restaurants, df)
-
 def newBoroughs(df: pd.DataFrame) -> int:
     return freshTable(db.Boroughs, df)
 
 def newCuisines(df: pd.DataFrame) -> int:
     return freshTable(db.Cuisines, df)
+
+def newRestauants(df: pd.DataFrame) -> int:
+    return freshTable(db.Restaurants, df)
 
 
 

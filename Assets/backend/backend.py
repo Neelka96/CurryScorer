@@ -7,7 +7,7 @@ from flask import request
 def forge_metadata(route, length, desc, params):
     metadata = {
         'current_route': route
-        ,'home_route': request.host 
+        ,'home_route': request.host
         ,'data_points': length
         ,'info': desc
         ,'params': params
@@ -16,7 +16,7 @@ def forge_metadata(route, length, desc, params):
     return metadata
 
 # Nests metadata and results together in one object 
-def format_json(route, nest, desc = 'None', params = 'None'):
+def forge_json(route, nest, desc = 'None', params = 'None'):
     json_api = {
         'metadata': forge_metadata(route, len(nest), desc, params)
         ,'results': nest

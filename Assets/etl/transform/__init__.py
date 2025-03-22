@@ -8,7 +8,9 @@ from Assets import config as C
 # Larger Abstractions
 
 def map_borough() -> dict:
-    '''Wrapper for `create_dict()` to create a borough dictionary with necessary static list'''
+    '''
+    Wrapper for `create_dict()` to create a borough dictionary with necessary static list.
+    '''
     try:
         # Utilizes constant BOROUGHS from config to call create_dict()
         return T.create_dict(C.BOROUGHS, lambda num: f'B{num}')
@@ -17,7 +19,9 @@ def map_borough() -> dict:
 
 
 def map_cuisine() -> dict:
-    '''Wrapper for `create_dict()` to create cuisine dictionary using derived ethnic cuisine list.'''
+    '''
+    Wrapper for `create_dict()` to create cuisine dictionary using derived ethnic cuisine list.
+    '''
     try:
         # Utilizes constant CUISINES from config file to call create_dict()
         return T.create_dict(C.CUISINES, lambda num: f'C{num}')

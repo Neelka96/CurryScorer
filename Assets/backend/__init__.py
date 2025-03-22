@@ -11,6 +11,7 @@ from . import backend as api
 # Flask Setup
 #################################################
 app = Flask(__name__)
+app.json.sort_keys = False
 
 # Endpoint Declarations
 heat_map_node = '/api/v1.0/map'
@@ -50,7 +51,7 @@ def api_map():
             }
         for r in results]
     desc = 'Retrieves restaurant details for interactive heat map.'
-    data_nest = api.format_json(heat_map_node, data, desc)
+    data_nest = api.forge_json(heat_map_node, data, desc)
     return jsonify(data_nest)
 
 
@@ -91,7 +92,7 @@ def api_topCuisines():
         for r in results]
     desc = 'Retrieves aggregated counts for cuisines in given borough.'
     params = {'borough': boro_param}
-    data_nest = api.format_json(top_cuisines_node, data, desc, params)
+    data_nest = api.forge_json(top_cuisines_node, data, desc, params)
     return jsonify(data_nest)
 
 
@@ -124,7 +125,7 @@ def api_cuisine_pie():
             }
         for r in results]
     desc = 'Retrieves percent distribution of all cuisines across NYC.'
-    data_nest = api.format_json(cuisine_dist_node, data, desc)
+    data_nest = api.forge_json(cuisine_dist_node, data, desc)
     return jsonify(data_nest)
 
 

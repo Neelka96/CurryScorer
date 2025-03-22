@@ -7,6 +7,9 @@ from . import database as db
 
 # Init database when it doesn't exist
 def init_db():
+    '''
+    Creates database from scratch along with all reference tables and calls API for fresh data.
+    '''
     # Extract main dataset from API
     dohmh_df = E.extraction('dohmh')
 
@@ -30,6 +33,9 @@ def init_db():
 
 
 def update_db():
+    '''
+    Calls API for updated restaurant dataset, doesn't touch reference tables.
+    '''
     # Extract main dataset from API
     dohmh_df = E.extraction('dohmh')
 

@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from typing import Callable
 
 
@@ -7,7 +6,9 @@ from typing import Callable
 
 # Cleaner helper
 def clean_helper(df: pd.DataFrame) -> pd.DataFrame:
-    '''Recieves pandas DataFrame as input, returns de-duplicated and datetime type correct DataFrame.'''
+    '''
+    Recieves pandas DataFrame as input, returns de-duplicated and datetime type correct DataFrame.
+    '''
 
     # Correcting date type --> datetime (doesn't need times or tz info)
     df['inspection_date'] = pd.to_datetime(df['inspection_date'])
@@ -30,7 +31,9 @@ def clean_df(
         ,junkFood_names: list
         ,ethnic_cuisines: list
     ) -> pd.DataFrame:
-    '''Cleans pandas DataFrame by calling `clean_helper()` and dropping/keeping only objects passed into correctly designated arguments.'''
+    '''
+    Cleans pandas DataFrame by calling `clean_helper()` and dropping/keeping only objects passed into correctly designated arguments.
+    '''
 
     # Calls clean_helper() on df to drop duplicates, sort columns, and correct datetime datetype
     try:
@@ -45,7 +48,9 @@ def clean_df(
 
 
 def create_dict(ref_list: list, translation: Callable[[int], str]) -> dict:
-    '''Takes in a reference list to create alias identifiers for, along with function used to map new aliases.'''
+    '''
+    Takes in a reference list to create alias identifiers for, along with function used to map new aliases.
+    '''
 
     # Dictionary comprehension used to apply function to each item as it's placed in dictionary
     norm_dict = {item : translation(num) for num, item in enumerate(ref_list, start = 1)}
@@ -76,10 +81,13 @@ def normalizeTable(
         ,target_col: str
         ,new_col: str
     ) -> pd.DataFrame:
-    '''Used to normalize main table with reference mappings on a target column.'''
+    '''
+    Used to normalize main table with reference mappings on a target column.
+    '''
     # Map dataframe target column values to dictionary containing new values
     denorm_df[target_col] = denorm_df[target_col].map(mapping)
     return denorm_df.rename(columns = {target_col: new_col})
+
 
 
 if __name__ == '__main__':
