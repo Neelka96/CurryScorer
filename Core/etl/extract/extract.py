@@ -13,10 +13,11 @@ import config as C
 
 def get_df(
         url: str
+        ,header: dict[str, str] = None
         ,params: dict[str, str] = None
+        ,timeout_req: int = C. API_TIMEOUT
         ,retries: int = C.API_RETRY
         ,delay: int = C.API_DELAY
-        ,timeout_req: int = C. API_TIMEOUT
         ) -> pd.DataFrame:
     '''
     Fetches data from the specified URL and converts it into a pandas DataFrame. Loops for API request retries if a request fails. Default parameters are in place handling request failure.
@@ -24,9 +25,9 @@ def get_df(
     Args:
         url (str): The URL to fetch data from.
         params (dict, optional): Query parameters for the API request.
+        timeout_req (int, optional): Seconds allowed before timing out API request.
         retries (int, optional): Max retries allowed per API request.
         delay (int, optional): Seconds to wait between retries of API request.
-        timeout_req (int, optional): Seconds allowed before timing out API request.
 
     Returns:
         pd.DataFrame: A DataFrame containing the data retrieved from the API.
@@ -40,7 +41,7 @@ def get_df(
         # Tries to call API using socrata (SODA) querying
         try:
             # Times out after set number of seconds
-            response = requests.get(url, params, timeout = timeout_req)
+            response = requests.get(url, params, headers = header, timeout = timeout_req)
             response.raise_for_status()     # Raise on bad response status
 
             # Print successful API return with attempt number

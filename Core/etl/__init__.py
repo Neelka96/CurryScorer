@@ -8,7 +8,8 @@ from . import extract as E
 import config as C
 
 def get_fastfoods(
-        csv_path: Path = C.FASTFOOD_CSV
+        header: dict[str, str] = None
+        ,csv_path: Path = C.FASTFOOD_CSV
         ,sleeping: int = C.SLEEP_TIME
         ) -> pd.DataFrame:
     '''
@@ -33,7 +34,7 @@ def get_fastfoods(
         else:
             # Save new df to prevent future API calls on this route and return df
             sleep(sleeping)
-            return E.extraction('fast_food').to_csv(csv_path)
+            return E.extraction('fast_food', header).to_csv(csv_path)
     except Exception as e:
         raise RuntimeError(f'Could not extract fast_food df: {e}')
 

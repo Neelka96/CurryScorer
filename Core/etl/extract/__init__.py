@@ -15,6 +15,7 @@ from pathlib import Path
 
 def extraction(
         dataSet: str
+        ,headers = None
         ,limit: int = C.ROW_LIMIT
         ,test_csv_path: Path = C.DOHMH_CLEAN
         ) -> pd.DataFrame:
@@ -77,7 +78,7 @@ def extraction(
     # -------------------------------------------
 
     # Return extracted and file-formatted data
-    return E.get_df(url, params)
+    return E.get_df(url, params, headers)
 
 
 # EOF

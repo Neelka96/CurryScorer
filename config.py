@@ -3,17 +3,18 @@
 # Import dependencies
 from pathlib import Path
 
-API_HEADER = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
+NYC_OPEN_KEY = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
+CENSUS_KEY = {}
 
 # Paths
 ASSETS_DIR = Path(__file__).resolve().parent / 'Core' # Main Assets Directory
-CLEAN_DATA_DIR = ASSETS_DIR / 'data' / 'clean'  # Assets/data/clean directory
-FASTFOOD_CSV = CLEAN_DATA_DIR / 'fastfood.csv'  # clean/fastfood.csv
+DATA_DIR = ASSETS_DIR / 'data'  # Assets/data/clean directory
+FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'  # clean/fastfood.csv
 
 
 # PATHS FOR TESTING PURPOSES
-DOHMH_CLEAN = CLEAN_DATA_DIR / 'dohmh_clean.csv' # clean/dohmh_clean.csv
-POPULATION_CLEAN = CLEAN_DATA_DIR / 'census_population.csv' # clean/census_population.csv
+DOHMH_CLEAN = DATA_DIR / 'dohmh_clean.csv' # clean/dohmh_clean.csv
+POPULATION_CLEAN = DATA_DIR / 'census_population.csv' # clean/census_population.csv
 
 
 # Filter Constants

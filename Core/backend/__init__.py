@@ -1,6 +1,7 @@
 # Import dependencies
 from sqlalchemy import func, select
-from flask import Flask, jsonify, request #, abort
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 import datetime as dt
 
 # Import subpackage dependencies
@@ -11,6 +12,7 @@ from . database import Restaurants, Boroughs, Cuisines, Session
 # Flask Setup
 #################################################
 app = Flask(__name__)
+CORS(app)
 app.json.sort_keys = False
 
 # Endpoint Declarations

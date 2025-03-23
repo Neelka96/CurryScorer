@@ -20,14 +20,14 @@ def Main_Ops():
     Runs main extraction and transformations methods that occur each time on initialization or updates. APIs are called if needed with properties from config file.
     '''
     # Extract main dataset from API
-    dohmh_df = E.extraction('dohmh')
+    dohmh_df = E.extraction('dohmh', C.NYC_OPEN_KEY)
 
     # Get mappings for boro and cuisine dictionaries
     boro_map = T.map_borough()
     cuisine_map = T.map_cuisine()
 
     # Get Fast Food names list
-    fastfood_names = etl.get_fastfoods().to_numpy().tolist()
+    fastfood_names = etl.get_fastfoods(C.NYC_OPEN_KEY).to_numpy().tolist()
 
     # Clean, correct, organize, and normalize using mappings
     clean_df = T.transformation(dohmh_df, fastfood_names, boro_map, cuisine_map)
