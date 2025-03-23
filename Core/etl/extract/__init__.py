@@ -10,15 +10,16 @@ import config as C
 from pathlib import Path
 # ------------------------------------------
 
-# Core extraction method used for all NYC Open Data API Calls
-# Encompasses query filtering and basic df creation
+
+# Extraction Abstractions
+
 def extraction(
         dataSet: str
         ,limit: int = C.ROW_LIMIT
         ,test_csv_path: Path = C.DOHMH_CLEAN
         ) -> pd.DataFrame:
     '''
-    Extracts data from a specified dataset.
+    Extracts data from a specified NYC Open dataset.
 
     Args:
         dataSet (str): The name of the dataset to extract or type of extraction.
@@ -28,6 +29,9 @@ def extraction(
     Returns:
         pd.DataFrame: A DataFrame containing the extracted data.
     '''
+    # Core extraction method used for all NYC Open Data API Calls
+    # Encompasses query filtering and basic df creation
+
     # Cond'l: Get Restaurant Inspections dataset from NYC Department of Health and Mental Hygiene (NYC Open)
     if dataSet == 'dohmh':
     # Build select statement with aliases
@@ -76,6 +80,7 @@ def extraction(
     return E.get_df(url, params)
 
 
+# EOF
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')

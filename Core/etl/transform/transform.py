@@ -3,7 +3,7 @@ import pandas as pd
 from collections.abc import Callable
 
 
-# TRANSFORMATION HELPERS
+# Transformation Helpers
 
 # Cleaner helper
 def clean_helper(df: pd.DataFrame) -> pd.DataFrame:
@@ -123,6 +123,7 @@ def normalizeTable(
     return denorm_df.rename(columns = {target_col: f'{target_col}_id'})
 
 
+# EOF
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')

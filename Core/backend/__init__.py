@@ -5,7 +5,6 @@ import datetime as dt
 
 # Import subpackage dependencies
 from . import backend as api
-# from database import Restaurants, Boroughs, Cuisines, Session
 from . database import Restaurants, Boroughs, Cuisines, Session
 
 #################################################

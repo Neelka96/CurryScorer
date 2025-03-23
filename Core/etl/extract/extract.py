@@ -8,6 +8,9 @@ from time import sleep
 # Import package and subpackage requirements for core building
 import config as C
 
+
+# Extraction Helpers
+
 def get_df(
         url: str
         ,params: dict[str, str] = None
@@ -90,6 +93,7 @@ def where_filter(years: int = C.INSPECTION_CUTOFF) -> str:
     return f'{filter_dt} AND {filter_NA}'
 
 
+# EOF
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')

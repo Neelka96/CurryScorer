@@ -3,8 +3,10 @@ from flask import request
 from typing import Any
 
 
+# Backend Helpers
+
+
 # Automatic Metadata Creation
-# ---------------------------
 def forge_metadata(
         route: str
         ,length: int
@@ -67,6 +69,9 @@ home_html = (
         '<h1>Welcome!</h1>'
     '</body>'
 )
+
+
+# EOF
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')

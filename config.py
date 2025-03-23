@@ -6,7 +6,7 @@ from pathlib import Path
 API_HEADER = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
 
 # Paths
-ASSETS_DIR = Path(__file__).resolve().parent / 'Assets' # Main Assets Directory
+ASSETS_DIR = Path(__file__).resolve().parent / 'Core' # Main Assets Directory
 CLEAN_DATA_DIR = ASSETS_DIR / 'data' / 'clean'  # Assets/data/clean directory
 FASTFOOD_CSV = CLEAN_DATA_DIR / 'fastfood.csv'  # clean/fastfood.csv
 
