@@ -8,6 +8,7 @@ from Core import backend as api
 # Import dependencies
 from pathlib import Path
 
+
 if __name__ == '__main__':
     '''
     Main entry point for the application. Initializes or updates the database
@@ -29,5 +30,4 @@ if __name__ == '__main__':
 # 2. ADD ENDPOINT FOR FULL TABLE QUERYING WITHIN WEB BROWSER
 #   - Add proper html styling for home node
 # 3. TEST FOR ALL ANGLES
-# 5. Ensure everything has proper docstrings and commenting
 # 6. Requests needs headers for API/APP Key

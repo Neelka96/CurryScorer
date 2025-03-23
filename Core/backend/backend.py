@@ -5,7 +5,6 @@ from typing import Any
 
 # Backend Helpers
 
-
 # Automatic Metadata Creation
 def forge_metadata(
         route: str

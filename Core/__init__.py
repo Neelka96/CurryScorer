@@ -32,7 +32,12 @@ def Main_Ops():
     # Clean, correct, organize, and normalize using mappings
     clean_df = T.transformation(dohmh_df, fastfood_names, boro_map, cuisine_map)
 
-    return clean_df, boro_map, cuisine_map
+    # ---------------------------------------------------------------------------------------------------------
+    # Grab population data from extraction (FOR NOW TESTING IS DONE THROUGH CSV)
+    population_dict = pd.read_csv(C.POPULATION_CLEAN).set_index('borough')['population'].to_dict()
+    # ---------------------------------------------------------------------------------------------------------
+
+    return clean_df, population_dict, boro_map, cuisine_map
 
 
 # Init database when it doesn't exist
@@ -44,12 +49,7 @@ def init_db() -> int:
         int: Returns 0 on a successful run.
     '''
     # Run Core ETL Operations and grab all returns for forging
-    main_df, boro_map, cuisine_map = Main_Ops()
-
-    # ---------------------------------------------------------------------------------------------------------
-    # Grab population data from extraction (FOR NOW TESTING IS DONE THROUGH CSV)
-    population_dict = pd.read_csv(C.POPULATION_CLEAN).set_index('borough')['population'].to_dict()
-    # ---------------------------------------------------------------------------------------------------------
+    main_df, population_dict, boro_map, cuisine_map = Main_Ops()
     
     # Forge reference tables using mappings
     boro_df = T.forge_boroughs(boro_map, population_dict)
@@ -66,16 +66,19 @@ def init_db() -> int:
 # Runs to update db, doesn't recreate reference tables
 def update_db() -> int:
     '''
-    Runs Core_ETL_Ops to update Restaurants Table - only calls APIs as needed in order to update main restaurant table. Doesn't touch reference tables.
+    Runs Core_ETL_Ops to update Restaurants and Boroughs Tables - only calls APIs as needed in order to update Restaurants and the population in Boroughs.
 
     Returns:
         int: Returns 0 on a successful run.
     '''
     # Run Core ETL Operations and only grab the cleaned restaurant df
-    main_df, _, _ = Main_Ops()
-    
-    # Update restaurant table, no need to touch reference tables
+    main_df, population_dict, _, _ = Main_Ops()
+
+    # Update Restaurants Table
     L.freshTable(Session, Restaurants, main_df)
+
+    # Update the Boroughs Table
+    L.updatePopulation(Session, Boroughs, population_dict)
     return 0
 
 

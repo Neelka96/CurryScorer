@@ -8,7 +8,7 @@ from collections.abc import Callable
 # Cleaner helper
 def clean_helper(df: pd.DataFrame) -> pd.DataFrame:
     '''
-    Helper function for clean_df(), performs necessary cleaning operations known to be needed for particular dataset.
+    Helper function for `clean_df()`, performs necessary cleaning operations known to be needed for particular dataset.
 
     Args:
         df (pd.DataFrame): A pandas dataframe to be cleaned by pre-set methods.
@@ -37,12 +37,12 @@ def clean_df(
     Cleans pandas DataFrame by calling `clean_helper()` and dropping/keeping only objects passed into correctly designated arguments.
 
     Args:
-        df (pd.DataFrame):
-        junkFood_names (list[str]):
-        ethnic_cuisines (list[str]):
+        df (pd.DataFrame): The dataframe being cleaned.
+        junkFood_names (list[str]): A list of junk food restaurant names used to remove associated rows.
+        ethnic_cuisines (list[str]): A list of ethnic cuisines used to keep only associated restaurants.
 
     Returns:
-        pd.DataFrame:
+        pd.DataFrame: The algorithmically and categorically cleaned DataFrame
     '''
     # Tries to call clean_helper() on df to drop duplicates, sort columns, and correct datetime datetype
     try:
