@@ -3,6 +3,7 @@
 # Import dependencies
 from pathlib import Path
 
+API_HEADER = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
 
 # Paths
 ASSETS_DIR = Path(__file__).resolve().parent / 'Assets' # Main Assets Directory

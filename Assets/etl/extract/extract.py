@@ -1,32 +1,64 @@
+# Import depdencies
 import pandas as pd
 import requests
 import io
 import datetime as dt
 from time import sleep
 
+# Import package and subpackage requirements for core building
 import config as C
 
-def get_df(url: str, params: dict = None) -> pd.DataFrame:
+def get_df(
+        url: str
+        ,params: dict[str, str] = None
+        ,retries: int = C.API_RETRY
+        ,delay: int = C.API_DELAY
+        ,timeout_req: int = C. API_TIMEOUT
+        ) -> pd.DataFrame:
     '''
-    Warning: Not for public use.
-    Calls API for starter data and decodes into a DataFrame.
-    Retries API call based on constant from config file.
+    Fetches data from the specified URL and converts it into a pandas DataFrame. Loops for API request retries if a request fails. Default parameters are in place handling request failure.
+
+    Args:
+        url (str): The URL to fetch data from.
+        params (dict, optional): Query parameters for the API request.
+        retries (int, optional): Max retries allowed per API request.
+        delay (int, optional): Seconds to wait between retries of API request.
+        timeout_req (int, optional): Seconds allowed before timing out API request.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the data retrieved from the API.
+
+    Raises:
+        requests.exceptions.Timeout: If the request times out after retries.
+        requests.exceptions.RequestException: For other request-related errors.
     '''
-    for attempt in range(1, C.API_RETRY + 1):
+    # Loops for the number of retries set
+    for attempt in range(1, retries + 1):
+        # Tries to call API using socrata (SODA) querying
         try:
-            # API Call itself using socrata (SODA) querying
-            response = requests.get(url, params, timeout = C.API_TIMEOUT)  # Timeout at 10 seconds for retry
+            # Times out after set number of seconds
+            response = requests.get(url, params, timeout = timeout_req)
             response.raise_for_status()     # Raise on bad response status
+
+            # Print successful API return with attempt number
             print(f'Successful API request on attempt {attempt}.')
-            break   # On successful retrieval break loop
+            
+            break   # Break loop early on success
+        
+        # If it can't retrieve data from timeout retry after delay
         except requests.exceptions.Timeout as e:
             print(f'Timeout on API attempt {attempt}: {e}')
-            if attempt < C.API_RETRY:
-                print(f'Retrying in {C.API_DELAY} seconds.')
-                sleep(C.API_DELAY)
+
+            # Checks if retries is at limit
+            if attempt < retries:
+                print(f'Retrying in {delay} seconds.')
+                sleep(delay)
+
+            # If it is exit with failure.
             else:
-                # Exiting on failure
                 raise e('Max retries reaches. Request failed.')
+        
+        # If there was an error besides timeout, exit function early with error
         except requests.exceptions.RequestException as e:
             raise e(f'Major error encountered. Request failed.')
         
@@ -35,21 +67,28 @@ def get_df(url: str, params: dict = None) -> pd.DataFrame:
     return pd.read_csv(csv)
 
 
-def where_filter(numYears: int) -> str:
+def where_filter(years: int = C.INSPECTION_CUTOFF) -> str:
     '''
-    Warning: Not for public use.
-    Builds `$where` filter for Socrata SODA query of `dohmh` dataset.
-    Returns string variant of `$where` clause
+    Builds a `$where` filter for a Socrata SODA query of the `dohmh` dataset.
+
+    Args:
+        years (int, optional): The number of years by which to filter the data.
+
+    Returns:
+        str: A string representing the `$where` clause for the query.
     '''
-    # Build filters for date (default 2 years) and no nulls for cuisine, lat, or lng
-    dateLimit = (dt.datetime.now() - dt.timedelta(days = numYears * 365)).isoformat()
+    # Build filter for date, to cutoff on a certain number of years (default 2)
+    dateLimit = (dt.datetime.now() - dt.timedelta(days = years * 365)).isoformat()
     filter_dt = f'inspection_date > "{dateLimit}"'
+
+    # Build filter for non-null cuisine, latitude, or longitude
     notNull = 'IS NOT NULL'
     filter_NA = \
         f'cuisine {notNull} AND lat {notNull} AND lng {notNull}'
     
-    # Init full filters for API call with limit
+    # Return string ready $where clause
     return f'{filter_dt} AND {filter_NA}'
+
 
 
 if __name__ == '__main__':

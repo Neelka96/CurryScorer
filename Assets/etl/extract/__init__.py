@@ -1,12 +1,34 @@
+# Import dependencies
 import pandas as pd
-from pathlib import Path
 
+# Import package and subpackage requirements for core building
 from . import extract as E
 import config as C 
 
+# ------------------------------------------
+# !!!FOR TESTING DELETE LATER!!!
+from pathlib import Path
+# ------------------------------------------
 
-def extraction(dataSet: str | Path) -> pd.DataFrame:
-    # Conditional switch for 2 datasets
+# Core extraction method used for all NYC Open Data API Calls
+# Encompasses query filtering and basic df creation
+def extraction(
+        dataSet: str
+        ,limit: int = C.ROW_LIMIT
+        ,test_csv_path: Path = C.DOHMH_CLEAN
+        ) -> pd.DataFrame:
+    '''
+    Extracts data from a specified dataset.
+
+    Args:
+        dataSet (str): The name of the dataset to extract or type of extraction.
+        limit (int, optional): The number of rows to be returned by API request.
+        test_csv_path (Path, optional): The path to use for skipping the API request during test phase, to be deleted along with this argument later.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the extracted data.
+    '''
+    # Cond'l: Get Restaurant Inspections dataset from NYC Department of Health and Mental Hygiene (NYC Open)
     if dataSet == 'dohmh':
     # Build select statement with aliases
         select = (
@@ -21,11 +43,14 @@ def extraction(dataSet: str | Path) -> pd.DataFrame:
         # Parameters to send with API Call
         params = {
             '$select': select,
-            '$where': E.where_filter(C.INSPECTION_CUTOFF),
-            '$limit': C.ROW_LIMIT
+            '$where': E.where_filter(),
+            '$limit': limit
         }
+        # Endpoint for API Call
         url = 'https://data.cityofnewyork.us/resource/43nn-pn8j.csv'
 
+
+    # Cond'l: Get NYC Common Fast Food dataset (NYC Open)
     elif dataSet == 'fast_food':
         # Build select statement with aliases
         select = 'distinct restaurant AS name,'
@@ -33,12 +58,19 @@ def extraction(dataSet: str | Path) -> pd.DataFrame:
         # Parameters to send with API Call
         params = {
             '$select': select,
-            '$limit': C.ROW_LIMIT
+            '$limit': limit
         }
+        # Endpoint for API Call
         url = 'https://data.cityofnewyork.us/resource/qgc5-ecnb.csv'
 
+    
+    # -------------------------------------------
+    # !!!TESTING!!! FOR DELETION LATER
+    # GRABS DATA FROM CSV INSTEAD OF CALLING API
+    # ENDS FUNCTION EARLY
     elif dataSet == 'testing':
-        return pd.read_csv(C.DOHMH_CLEAN)
+        return pd.read_csv(test_csv_path)
+    # -------------------------------------------
 
     # Return extracted and file-formatted data
     return E.get_df(url, params)
