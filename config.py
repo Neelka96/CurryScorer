@@ -11,14 +11,14 @@ UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 
 # Paths
-PERS_STORAGE = Path('/home')
-CORE_DIR = PERS_STORAGE / 'Core' # Main Core Directory
-DATA_DIR = CORE_DIR / 'data'    # Core/data
+ROOT_DIR = Path(__file__)
+DATA_DIR = ROOT_DIR / 'data'    # Core/data
 FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
 POPULATION_CLEAN = DATA_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
-DB_PATH = PERS_STORAGE / 'courier.sqlite'
+TEMPLATE_DIR = DATA_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
+
+DB_PATH = ROOT_DIR / 'courier.sqlite'
 SQLALCHEMY_URI = f'sqlite:///{DB_PATH}'
 
 # Filter Constants
