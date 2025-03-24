@@ -34,6 +34,7 @@ def get_fastfoods(
         # Else extract a new fast_food csv (so sleep first between this and the first API call)
         else:
             # Save new df to prevent future API calls on this route and return df
+            print(f'Sleeping between API calls for {sleeping} seconds...')
             sleep(sleeping)
             df = E.extraction('fast_food', api_key)
             df.to_csv(csv_path, header = True, index = False)

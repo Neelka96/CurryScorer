@@ -2,6 +2,7 @@
 from sqlalchemy import create_engine, event, Engine, ForeignKey, Column, Integer, Float, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
+import config as C
 
 # SQLITE BACKEND ARCHITECTURE
 
@@ -92,7 +93,7 @@ class Restaurants(Base):
 
 
 # Create IMPORTANT ENGINE to be used across namespaces
-engine = create_engine('sqlite:///courier.sqlite')
+engine = create_engine(C.SQLALCHEMY_URI)
 
 # Event listener for engine connection, enforces foreign keys upon connection
 @event.listens_for(Engine, 'connect')

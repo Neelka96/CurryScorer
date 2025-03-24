@@ -5,11 +5,6 @@ import pandas as pd
 from . import extract as E
 import config as C 
 
-# # ------------------------------------------
-# # !!!FOR TESTING DELETE LATER!!!
-# from pathlib import Path
-# # ------------------------------------------
-
 
 # Extraction Abstractions
 
@@ -17,7 +12,6 @@ def extraction(
         dataSet: str
         ,api_key: str = None
         ,limit: int = C.ROW_LIMIT
-        # ,test_csv_path: Path = C.DOHMH_CLEAN
         ) -> pd.DataFrame:
     '''
     Extracts data from a specified NYC Open dataset.
