@@ -1,13 +1,6 @@
-# Import modules for core controlling from here
-import Core
-from Core.backend.database import engine
 from Core import backend as api
-import config as C
-import keys
 
-# Import dependencies
-from pathlib import Path
-from datetime import datetime as dt
+app = api.app
 
 
 if __name__ == '__main__':
@@ -15,6 +8,17 @@ if __name__ == '__main__':
     Main entry point for the application. Initializes or updates the database depending on the current date and time, and the time since your last update.
     Afterwards, it will always serve up Flask API for fetching.
     '''
+    # Import modules for core controlling from here
+    import Core
+    from Core.backend.database import engine
+    from Core import backend as api
+    import config as C
+    import keys
+
+    # Import dependencies
+    from pathlib import Path
+    from datetime import datetime as dt
+
     ################################################
     # Set API Keys for passing down to functions
     nyc_open_key = keys.NYC_OPEN_KEY
