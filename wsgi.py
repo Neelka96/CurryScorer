@@ -60,7 +60,7 @@ if __name__ == '__main__':
         print('DataBase successfully created! Serving up API...\n')
 
     # Serve up flask API
-    api.app.run(debug = True, use_reloader = False)
+    api.app.run(debug = False, use_reloader = False)
 
 
 # NOTE TO SELF:
