@@ -74,11 +74,11 @@ def init_db(nyc_open_key: str = None) -> int:
     # Run Core ETL Operations and grab all returns for forging
     print(
         'Running Main Operations...'
-        '--------------------------\n'
+        '\n--------------------------\n'
     )
     main_df, population_dict, boro_map, cuisine_map = Main_Ops(nyc_open_key)
     print(
-        '\n------------------------------------'
+        '\n------------------------------------\n'
         'Successful run of main operations!\n'
     )
     
