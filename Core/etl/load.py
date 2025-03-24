@@ -75,15 +75,3 @@ def updatePopulation(
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')
-
-
-
-
-# Init db -> Call Census API -> ETL to df -> Save as CSV (for timestamp) -> Convert df to dictionary
-# Updated db -> Check the date of the CSV file [Out of date] -> Call Census API -> ETL to df -> Save as CSV (for timestamp) -> Convert df to dictionary
-#                                                  [In date] -> Don't do anything for populations
-
-
-# Decouple population task from Main_Ops()
-# Set up conditional within nested function to just be called by update db
-# Allow init db to bypass and just call base functions to retrive data
