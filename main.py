@@ -15,6 +15,11 @@ if __name__ == '__main__':
     Main entry point for the application. Initializes or updates the database depending on the current date and time, and the time since your last update.
     Afterwards, it will always serve up Flask API for fetching.
     '''
+    ################################################
+    # Set API Key for passing down to functions
+    api_key = C.NYC_OPEN_KEY
+    ################################################
+
     # Collects Path of SQLite DataBase Engine if it exists
     db_path = Path(engine.url.database)
 
@@ -31,7 +36,7 @@ if __name__ == '__main__':
             print(f'Wow, it\'s been {since_last_update} since your last update! Time for an update.')
             try:
                 print('Updating DataBase (Restaurant Table and Population in Boroughs)...')
-                Core.update_db(C.NYC_OPEN_KEY)
+                Core.update_db(api_key)
                 print(
                     'Success!\n'
                     'Serving up API...'
@@ -46,7 +51,7 @@ if __name__ == '__main__':
     # If the file isn't found, database creation is started
     except FileNotFoundError as e:
         print('DataBase not found, initializing...')
-        Core.init_db(C.NYC_OPEN_KEY)
+        Core.init_db(api_key)
         print('DataBase successfully created! Serving up API...\n')
 
     # Serve up flask API

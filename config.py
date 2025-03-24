@@ -4,23 +4,24 @@
 from pathlib import Path
 from datetime import timedelta
 
-
+################################################################################################################################################
 # VERY IMPORTANT: UPDATE INTERVAL, PLEASE SPECIFY AS TIMEDELTA OBJECT
 # (If you're not familiar with timedelta objects, hover over the class for a hint, or put a comma after the `2` in `weeks = 2` for more info)
 UPDATE_INTERVAL = timedelta(weeks = 2)
+################################################################################################################################################
 
-
-# NYC_OPEN_KEY = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
-# CENSUS_KEY = {}
+################################################################################################################################################
+# ALSO VERY IMPORTANT: APP TOKEN KEY USED FOR NYC OPEN API CALLS
 NYC_OPEN_KEY = 'Mns58uLtJSUnSFsfruC91Uk7p'
+################################################################################################################################################
 
 # Paths
 CORE_DIR = Path(__file__).resolve().parent / 'Core' # Main Core Directory
-DATA_DIR = CORE_DIR / 'data'  # Core/data directory
-FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'  # data/fastfood.csv
-POPULATION_CLEAN = DATA_DIR / 'census_population.csv' # data/census_population.csv
-# # PATHS FOR TESTING PURPOSES
-# DOHMH_CLEAN = DATA_DIR / 'dohmh_clean.csv' # data/dohmh_clean.csv
+DATA_DIR = CORE_DIR / 'data'    # Core/data
+FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
+POPULATION_CLEAN = DATA_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
+TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
+
 
 # Filter Constants
 ROW_LIMIT = 200000  # Max limit for rows returned by API
@@ -28,7 +29,7 @@ INSPECTION_CUTOFF = 2   # In years, describes max years allowed since last inspe
 
 
 # API Constants
-SLEEP_TIME = 5  # In seconds, sleep time between two different API calls for a similar website - only needed during init db construction.
+SLEEP_TIME = 10  # In seconds, sleep time between two different API calls for a similar website - only needed during init db construction.
 API_TIMEOUT = 15    # In seconds, requests.get() request timeout cutoff.
 API_RETRY = 2   # Number of retries for API calls - used in core get_df() function.
 API_DELAY = 10  # In seconds, delay upon retry before another request is sent out.

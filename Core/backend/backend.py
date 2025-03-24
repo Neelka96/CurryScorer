@@ -61,15 +61,6 @@ def forge_json(
     return json_api
 
 
-home_html = (
-    '<head>'
-    '</head>'
-    '<body>'
-        '<h1>Welcome!</h1>'
-    '</body>'
-)
-
-
 # EOF
 
 if __name__ == '__main__':

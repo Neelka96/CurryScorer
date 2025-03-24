@@ -1,17 +1,18 @@
 # Import dependencies
 from sqlalchemy import func, select
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import datetime as dt
 
 # Import subpackage dependencies
 from . import backend as api
 from . database import Restaurants, Boroughs, Cuisines, Session
+import config as C
 
 #################################################
 # Flask Setup
 #################################################
-app = Flask(__name__)
+app = Flask(__name__, template_folder = C.TEMPLATE_DIR)
 CORS(app)
 app.json.sort_keys = False
 
@@ -35,7 +36,7 @@ def home():
     Returns:
         str: A welcome message or HTML content for the home page.
     '''
-    return api.home_html
+    return render_template('home.html')
 
 
 # Endpoint for interactive heat map
