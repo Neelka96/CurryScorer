@@ -1,5 +1,4 @@
 # Import modules for core controlling from here
-
 import Core
 from Core.backend.database import engine
 from Core import backend as api
@@ -61,5 +60,14 @@ if __name__ == '__main__':
 # NOTE TO SELF:
 # NEXT STEPS:
 # 1. ADD METHOD FOR AUTO ETL OF POPULATION DATA
-# 2. ADD ENDPOINT FOR FULL TABLE QUERYING WITHIN WEB BROWSER
-#   - Add proper html styling for home node
+# 3. HOST LIVE BY CLASS!!!!!!!!!!!!!!!
+
+
+# ADD ENDPOINT FOR FULL TABLE QUERYING WITHIN WEB BROWSER (MIGHT BE TOO DIFFICULT TO IMPLEMENT, CHECK IN LATER)
+
+
+# Implement switch to header at some point if possible:
+# headers = {
+#     'X-App-Token': MY_APP_TOKEN_ID,
+# }
+# response = requests.get(api_url, headers=headers, params=other_params)

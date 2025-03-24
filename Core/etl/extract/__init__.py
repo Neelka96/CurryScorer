@@ -70,15 +70,6 @@ def extraction(
         # Endpoint for API Call
         url = 'https://data.cityofnewyork.us/resource/qgc5-ecnb.csv'
 
-    
-    # # -------------------------------------------
-    # # !!!TESTING!!! FOR DELETION LATER
-    # # GRABS DATA FROM CSV INSTEAD OF CALLING API
-    # # ENDS FUNCTION EARLY
-    # elif dataSet == 'testing':
-    #     return pd.read_csv(test_csv_path)
-    # # -------------------------------------------
-
     # Return extracted and file-formatted data
     return E.get_df(url, params, dataSet)
 
