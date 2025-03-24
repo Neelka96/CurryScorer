@@ -10,12 +10,6 @@ from datetime import timedelta
 UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 
-################################################################################################################################################
-# ALSO VERY IMPORTANT: APP TOKEN KEY USED FOR NYC OPEN AND API KEY FOR CENSUS
-NYC_OPEN_KEY = 'Mns58uLtJSUnSFsfruC91Uk7p'
-CENSUS_KEY = '95037657b7be43b6208cae5f3c63e1563065b321'
-################################################################################################################################################
-
 # Paths
 CORE_DIR = Path(__file__).resolve().parent / 'Core' # Main Core Directory
 DATA_DIR = CORE_DIR / 'data'    # Core/data

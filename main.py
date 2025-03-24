@@ -3,6 +3,7 @@ import Core
 from Core.backend.database import engine
 from Core import backend as api
 import config as C
+import keys
 
 # Import dependencies
 from pathlib import Path
@@ -15,8 +16,9 @@ if __name__ == '__main__':
     Afterwards, it will always serve up Flask API for fetching.
     '''
     ################################################
-    # Set API Key for passing down to functions
-    api_key = C.NYC_OPEN_KEY
+    # Set API Keys for passing down to functions
+    nyc_open_key = keys.NYC_OPEN_KEY
+    census_key = keys.CENSUS_KEY
     ################################################
 
     # Collects Path of SQLite DataBase Engine if it exists
@@ -35,7 +37,7 @@ if __name__ == '__main__':
             print(f'Wow, it\'s been {since_last_update} since your last update! Time for an update.')
             try:
                 print('Updating DataBase (Restaurant Table and Population in Boroughs)...')
-                Core.update_db(api_key)
+                Core.update_db(nyc_open_key)
                 print(
                     'Success!\n'
                     'Serving up API...'
@@ -50,7 +52,7 @@ if __name__ == '__main__':
     # If the file isn't found, database creation is started
     except FileNotFoundError as e:
         print('DataBase not found, initializing...')
-        Core.init_db(api_key)
+        Core.init_db(nyc_open_key)
         print('DataBase successfully created! Serving up API...\n')
 
     # Serve up flask API

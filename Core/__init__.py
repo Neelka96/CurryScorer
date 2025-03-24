@@ -84,7 +84,7 @@ def init_db(nyc_open_key: str = None) -> int:
     
     # Forge reference tables using mappings
     print('Forging Boroughs and Cuisines DataFrames...')
-    boro_df = T.forge_boroughs(boro_map, population_dict)
+    boro_df = T.forge_boroughs(boro_map, population_dict)   # Should probably implement a join vs map in the forging if it's faster
     cuisine_df = T.forge_cuisines(cuisine_map)
     print('DataFrames successfully forged!\n')
 
