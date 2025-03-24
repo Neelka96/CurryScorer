@@ -1,3 +1,6 @@
+# API KEYS FILE TO BE HIDDEN IN REPO
+keys.py
+
 # MacOS Directory Config
 .DS_Store
 
