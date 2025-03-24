@@ -1,28 +1,75 @@
-from Assets import etl
-from Assets.etl import database as db
-from Assets.backend import flask_api as api
+# Import modules for core controlling from here
+import Core
+from Core.backend.database import engine
+from Core import backend as api
+import config as C
+import keys
 
+# Import dependencies
 from pathlib import Path
+from datetime import datetime as dt
+
 
 if __name__ == '__main__':
-    # db_path = Path(db.engine.url.database)
-    # links = {
-    #     'cuisine': Path('Assets/data/cuisine_bins/keep.txt')
-    #     ,'fast_food': Path('Assets/data/clean/fastfood.csv')
-    # }
-    # if db_path.exists():
-    #     etl.update_db(links)
-    # else:
-    #     etl.init_db(links)
+    '''
+    Main entry point for the application. Initializes or updates the database depending on the current date and time, and the time since your last update.
+    Afterwards, it will always serve up Flask API for fetching.
+    '''
+    ################################################
+    # Set API Keys for passing down to functions
+    nyc_open_key = keys.NYC_OPEN_KEY
+    census_key = keys.CENSUS_KEY
+    ################################################
 
-    db_path = Path(db.engine.url.database)
-    links = {
-        'cuisine': Path('Assets/data/cuisine_bins/keep.txt')
-        ,'fast_food': Path('Assets/data/clean/fastfood.csv')
-    }
-    if db_path.exists():
-        etl.testing_update(links, Path('Assets/data/clean/dohmh_clean.csv'))
-    else:
-        etl.testing_create(links, Path('Assets/data/clean/dohmh_clean.csv'))
+    # Collects Path of SQLite DataBase Engine if it exists
+    db_path = Path(engine.url.database)
 
-    api.app.run(debug = True)
+    # Tries to collect timestamp from engine, if it doesn't exist create the database
+    try:
+        # Last modified date
+        last_modified = dt.fromtimestamp(db_path.stat().st_mtime)
+        
+        # Calculated time since last update
+        since_last_update = dt.now() - last_modified
+
+        # If the last update time exceeds the time set in your config.py file found in the route, your database will update
+        if since_last_update > C.UPDATE_INTERVAL:
+            print(f'Wow, it\'s been {since_last_update} since your last update! Time for an update.')
+            try:
+                print('Updating DataBase (Restaurant Table and Population in Boroughs)...')
+                Core.update_db(nyc_open_key)
+                print(
+                    'Success!\n'
+                    'Serving up API...'
+                )
+            except Exception as e:
+                raise e
+            
+        # If it's not out-of-date, your database will simply be used to serve up the API
+        else:
+            print('Your database is up-to-date! Serving up API...\n')
+
+    # If the file isn't found, database creation is started
+    except FileNotFoundError as e:
+        print('DataBase not found, initializing...')
+        Core.init_db(nyc_open_key)
+        print('DataBase successfully created! Serving up API...\n')
+
+    # Serve up flask API
+    api.app.run(debug = True, use_reloader = False)
+
+
+# NOTE TO SELF:
+# NEXT STEPS:
+# 1. ADD METHOD FOR AUTO ETL OF POPULATION DATA
+# 3. HOST LIVE BY CLASS!!!!!!!!!!!!!!!
+
+
+# ADD ENDPOINT FOR FULL TABLE QUERYING WITHIN WEB BROWSER (MIGHT BE TOO DIFFICULT TO IMPLEMENT, CHECK IN LATER)
+
+
+# Implement switch to header at some point if possible:
+# headers = {
+#     'X-App-Token': MY_APP_TOKEN_ID,
+# }
+# response = requests.get(api_url, headers=headers, params=other_params)
