@@ -13,8 +13,8 @@ import config as C
 
 def get_df(
         url: str
-        ,header: dict[str, str] = None
         ,params: dict[str, str] = None
+        ,set_name: str = None
         ,timeout_req: int = C. API_TIMEOUT
         ,retries: int = C.API_RETRY
         ,delay: int = C.API_DELAY
@@ -25,6 +25,7 @@ def get_df(
     Args:
         url (str): The URL to fetch data from.
         params (dict, optional): Query parameters for the API request.
+        set_name (str, optional): The name of the data set being requested to be displayed for debugging purposes.
         timeout_req (int, optional): Seconds allowed before timing out API request.
         retries (int, optional): Max retries allowed per API request.
         delay (int, optional): Seconds to wait between retries of API request.
@@ -41,17 +42,17 @@ def get_df(
         # Tries to call API using socrata (SODA) querying
         try:
             # Times out after set number of seconds
-            response = requests.get(url, params, headers = header, timeout = timeout_req)
+            response = requests.get(url, params, timeout = timeout_req)
             response.raise_for_status()     # Raise on bad response status
 
             # Print successful API return with attempt number
-            print(f'Successful API request on attempt {attempt}.')
+            print(f'Successful API request for {set_name} made! Attempt: {attempt}.')
             
             break   # Break loop early on success
         
         # If it can't retrieve data from timeout retry after delay
         except requests.exceptions.Timeout as e:
-            print(f'Timeout on API attempt {attempt}: {e}')
+            print(f'Timeout on API request for {set_name}. Attempt: {attempt}. {e}')
 
             # Checks if retries is at limit
             if attempt < retries:
@@ -60,11 +61,11 @@ def get_df(
 
             # If it is exit with failure.
             else:
-                raise e('Max retries reaches. Request failed.')
+                raise e
         
         # If there was an error besides timeout, exit function early with error
         except requests.exceptions.RequestException as e:
-            raise e(f'Major error encountered. Request failed.')
+            raise e
         
     # Using io.StringIO to create pseudo CSV file for reading
     csv = io.StringIO(response.content.decode('utf-8'))

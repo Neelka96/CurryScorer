@@ -5,27 +5,27 @@ import pandas as pd
 from . import extract as E
 import config as C 
 
-# ------------------------------------------
-# !!!FOR TESTING DELETE LATER!!!
-from pathlib import Path
-# ------------------------------------------
+# # ------------------------------------------
+# # !!!FOR TESTING DELETE LATER!!!
+# from pathlib import Path
+# # ------------------------------------------
 
 
 # Extraction Abstractions
 
 def extraction(
         dataSet: str
-        ,headers = None
+        ,api_key: str = None
         ,limit: int = C.ROW_LIMIT
-        ,test_csv_path: Path = C.DOHMH_CLEAN
+        # ,test_csv_path: Path = C.DOHMH_CLEAN
         ) -> pd.DataFrame:
     '''
     Extracts data from a specified NYC Open dataset.
 
     Args:
         dataSet (str): The name of the dataset to extract or type of extraction.
+        api_key (str): The API Key needed to make requests for given dataset.
         limit (int, optional): The number of rows to be returned by API request.
-        test_csv_path (Path, optional): The path to use for skipping the API request during test phase, to be deleted along with this argument later.
 
     Returns:
         pd.DataFrame: A DataFrame containing the extracted data.
@@ -47,9 +47,10 @@ def extraction(
         )
         # Parameters to send with API Call
         params = {
-            '$select': select,
-            '$where': E.where_filter(),
-            '$limit': limit
+            '$select': select
+            ,'$where': E.where_filter()
+            ,'$limit': limit
+            ,'$$app_token': api_key
         }
         # Endpoint for API Call
         url = 'https://data.cityofnewyork.us/resource/43nn-pn8j.csv'
@@ -58,27 +59,28 @@ def extraction(
     # Cond'l: Get NYC Common Fast Food dataset (NYC Open)
     elif dataSet == 'fast_food':
         # Build select statement with aliases
-        select = 'distinct restaurant AS name,'
+        select = 'distinct restaurant AS name'
 
         # Parameters to send with API Call
         params = {
-            '$select': select,
-            '$limit': limit
+            '$select': select
+            ,'$limit': limit
+            ,'$$app_token': api_key
         }
         # Endpoint for API Call
         url = 'https://data.cityofnewyork.us/resource/qgc5-ecnb.csv'
 
     
-    # -------------------------------------------
-    # !!!TESTING!!! FOR DELETION LATER
-    # GRABS DATA FROM CSV INSTEAD OF CALLING API
-    # ENDS FUNCTION EARLY
-    elif dataSet == 'testing':
-        return pd.read_csv(test_csv_path)
-    # -------------------------------------------
+    # # -------------------------------------------
+    # # !!!TESTING!!! FOR DELETION LATER
+    # # GRABS DATA FROM CSV INSTEAD OF CALLING API
+    # # ENDS FUNCTION EARLY
+    # elif dataSet == 'testing':
+    #     return pd.read_csv(test_csv_path)
+    # # -------------------------------------------
 
     # Return extracted and file-formatted data
-    return E.get_df(url, params, headers)
+    return E.get_df(url, params, dataSet)
 
 
 # EOF

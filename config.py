@@ -2,20 +2,25 @@
 
 # Import dependencies
 from pathlib import Path
+from datetime import timedelta
 
-NYC_OPEN_KEY = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
-CENSUS_KEY = {}
+
+# VERY IMPORTANT: UPDATE INTERVAL, PLEASE SPECIFY AS TIMEDELTA OBJECT
+# (If you're not familiar with timedelta objects, hover over the class for a hint, or put a comma after the `2` in `weeks = 2` for more info)
+UPDATE_INTERVAL = timedelta(weeks = 2)
+
+
+# NYC_OPEN_KEY = {'Mns58uLtJSUnSFsfruC91Uk7p': '2340n8bquaen6mhujoyl954wb'}
+# CENSUS_KEY = {}
+NYC_OPEN_KEY = 'Mns58uLtJSUnSFsfruC91Uk7p'
 
 # Paths
-ASSETS_DIR = Path(__file__).resolve().parent / 'Core' # Main Assets Directory
-DATA_DIR = ASSETS_DIR / 'data'  # Assets/data/clean directory
-FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'  # clean/fastfood.csv
-
-
-# PATHS FOR TESTING PURPOSES
-DOHMH_CLEAN = DATA_DIR / 'dohmh_clean.csv' # clean/dohmh_clean.csv
-POPULATION_CLEAN = DATA_DIR / 'census_population.csv' # clean/census_population.csv
-
+CORE_DIR = Path(__file__).resolve().parent / 'Core' # Main Core Directory
+DATA_DIR = CORE_DIR / 'data'  # Core/data directory
+FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'  # data/fastfood.csv
+POPULATION_CLEAN = DATA_DIR / 'census_population.csv' # data/census_population.csv
+# # PATHS FOR TESTING PURPOSES
+# DOHMH_CLEAN = DATA_DIR / 'dohmh_clean.csv' # data/dohmh_clean.csv
 
 # Filter Constants
 ROW_LIMIT = 200000  # Max limit for rows returned by API

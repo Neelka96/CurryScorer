@@ -1,7 +1,7 @@
 # Import dependencies
 import pandas as pd
 from sqlalchemy import Table, select, insert, delete
-from sqlalchemy.orm import Session, sessionmaker, ColumnProperty
+from sqlalchemy.orm import Session, sessionmaker
 from typing import Any
 
 # Loading File
@@ -12,7 +12,8 @@ def freshTable(
         ,df: pd.DataFrame
         ) -> int:
     '''
-    Deletes all existing data in the specified table and inserts new data from the provided DataFrame.
+    Deletes all existing data in the specified table and inserts new data from the provided DataFrame. 
+    Only meant to be used the first time creating the reference tables and the main table. After that, only for the Restaurant table.
 
     Args:
         Session (sessionmaker[Session]): A session maker bound to an engine with configurations already, for accessing through the ORM Layer.
@@ -65,7 +66,7 @@ def updatePopulation(
                 row = session.execute(stmt).scalar_one()
                 row.population = data
                 session.commit()
-
+        return 0
     except Exception as e:
         raise RuntimeError(f'Could not update {tableClass}: {e}')
 
