@@ -78,4 +78,5 @@ jobs:
         with:
           app-name: 'curryscorer'
           slot-name: 'Production'
-          
+          NYC_OPEN_KEY: ${{ secrets.NYC_OPEN_KEY }}
+          CENSUS_KEY: ${{ secrets.CENSUS_KEY }}

@@ -1,8 +1,10 @@
 # Configuration File
 
 # Import dependencies
+import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 
 ################################################################################################################################################
 # VERY IMPORTANT: UPDATE INTERVAL, PLEASE SPECIFY AS TIMEDELTA OBJECT
@@ -10,16 +12,24 @@ from datetime import timedelta
 UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 
+################################################################################################################################################
+# GRABBING ENV VARIABLES
+load_dotenv()
+NYC_OPEN_KEY = os.environ('NYC_OPEN_KEY')
+CENSUS_KEY = os.environ('CENSUS_KEY')
+################################################################################################################################################
+
 # Paths
 ROOT_DIR = Path(__file__).resolve().parent
-DATA_DIR = ROOT_DIR / 'data'    # Core/data
-FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
-POPULATION_CLEAN = DATA_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-
 TEMPLATE_DIR = ROOT_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
 
-DB_PATH = ROOT_DIR / 'courier.sqlite'
+HOME_DIR = Path(os.environ.get('HOME', '/home'))
+FASTFOOD_CSV = HOME_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
+POPULATION_CLEAN = HOME_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
+
+DB_PATH = HOME_DIR / 'courier.sqlite'
 SQLALCHEMY_URI = f'sqlite:///{DB_PATH}'
+
 
 # Filter Constants
 ROW_LIMIT = 200000  # Max limit for rows returned by API
