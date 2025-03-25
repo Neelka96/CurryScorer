@@ -10,12 +10,14 @@ from datetime import timedelta
 UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 
-# Paths
-CORE_DIR = Path(__file__).resolve().parent / 'Core' # Main Core Directory
-DATA_DIR = CORE_DIR / 'data'    # Core/data
+# Dir Paths
+ROOT_DIR = Path(__file__).resolve().parent
+DATA_DIR = ROOT_DIR / 'data'    # Core/data
+TEMPLATE_DIR = ROOT_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
+
+# CSV Files
 FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
 POPULATION_CLEAN = DATA_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
 # Filter Constants
