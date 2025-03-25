@@ -17,10 +17,10 @@ CORS(app)
 app.json.sort_keys = False
 
 # Endpoint Declarations
-heat_map_node = '/api/v1.0/map'
+heat_map_node = '/api/v1.0/map/'
 top_cuisines_node = '/api/v1.0/top-cuisines/'
-cuisine_dist_node = '/api/v1.0/cuisine-distributions'
-borough_summary_node = '/api/v1.0/borough-summaries'
+cuisine_dist_node = '/api/v1.0/cuisine-distributions/'
+borough_summary_node = '/api/v1.0/borough-summaries/'
 
 
 #################################################
@@ -125,7 +125,7 @@ def api_cuisine_pie():
     '''
     with Session() as session:
         stmt_total = select(func.count(Restaurants.id))
-        total = session.scalars(stmt_total)
+        total = session.scalars(stmt_total).one()
 
         stmt = (
             select(
