@@ -1,3 +1,7 @@
+from Core import backend as api
+
+app = api.app
+
 if __name__ == '__main__':
     '''
     Main entry point for the application. Initializes or updates the database depending on the current date and time, and the time since your last update.
