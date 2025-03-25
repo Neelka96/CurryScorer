@@ -93,7 +93,7 @@ class Restaurants(Base):
 
 
 # Create IMPORTANT ENGINE to be used across namespaces
-engine = create_engine(C.SQLALCHEMY_URI)
+engine = create_engine(C.ENGINE_URI)
 
 # Event listener for engine connection, enforces foreign keys upon connection
 @event.listens_for(Engine, 'connect')
