@@ -6,6 +6,15 @@ import config as C
 # Import dependencies
 from pathlib import Path
 
+# Collects Path of SQLite DataBase Engine if it exists
+db_path = Path(engine.url.database)
+
+# Run All DB Tests and Ops
+main.run_db_ops(db_path, C.NYC_OPEN_KEY)
+
+# Serve up flask API
+app.run()
+
 
 if __name__ == '__main__':
     # Collects Path of SQLite DataBase Engine if it exists
