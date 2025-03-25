@@ -1,29 +1,22 @@
 import main
 from Core.backend.database import engine
-from Core import backend as api
-import keys
+from Core.backend import app
+import config as C
 
 # Import dependencies
 from pathlib import Path
 
-################################################
-# Set API Keys for passing down to functions
-nyc_open_key = keys.NYC_OPEN_KEY
-# census_key = keys.CENSUS_KEY
-################################################
-
-# Collects Path of SQLite DataBase Engine if it exists
-db_path = Path(engine.url.database)
-
-# Run All DB Tests and Ops
-main.run_db_ops(db_path, nyc_open_key)
-
-# Serve up flask API
-app = api.app
-
 
 if __name__ == '__main__':
-    api.app.run(debug = False, use_reloader = False)
+    # Collects Path of SQLite DataBase Engine if it exists
+    db_path = Path(engine.url.database)
+
+    # Run All DB Tests and Ops
+    main.run_db_ops(db_path, C.NYC_OPEN_KEY)
+
+    # Serve up flask API
+    app.run()
+
 
 # NOTE TO SELF:
 # NEXT STEPS:
