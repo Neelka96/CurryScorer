@@ -11,12 +11,15 @@ UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 
 # Paths
-CORE_DIR = Path(__file__).resolve().parent / 'Core' # Main Core Directory
-DATA_DIR = CORE_DIR / 'data'    # Core/data
+ROOT_DIR = Path(__file__).resolve().parent
+DATA_DIR = ROOT_DIR / 'data'    # Core/data
 FASTFOOD_CSV = DATA_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
 POPULATION_CLEAN = DATA_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
+TEMPLATE_DIR = ROOT_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
+
+DB_PATH = ROOT_DIR / 'courier.sqlite'
+SQLALCHEMY_URI = f'sqlite:///{DB_PATH}'
 
 # Filter Constants
 ROW_LIMIT = 200000  # Max limit for rows returned by API

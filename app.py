@@ -1,20 +1,19 @@
-# Import modules for core controlling from here
-import Core
-from Core.backend.database import engine
-from Core import backend as api
-import config as C
-import keys
-
-# Import dependencies
-from pathlib import Path
-from datetime import datetime as dt
-
-
 if __name__ == '__main__':
     '''
     Main entry point for the application. Initializes or updates the database depending on the current date and time, and the time since your last update.
     Afterwards, it will always serve up Flask API for fetching.
     '''
+    # Import modules for core controlling from here
+    import Core
+    from Core.backend.database import engine
+    from Core import backend as api
+    import config as C
+    import keys
+
+    # Import dependencies
+    from pathlib import Path
+    from datetime import datetime as dt
+
     ################################################
     # Set API Keys for passing down to functions
     nyc_open_key = keys.NYC_OPEN_KEY
@@ -56,7 +55,7 @@ if __name__ == '__main__':
         print('DataBase successfully created! Serving up API...\n')
 
     # Serve up flask API
-    api.app.run(debug = True, use_reloader = False)
+    api.app.run(debug = False, use_reloader = False)
 
 
 # NOTE TO SELF:
@@ -73,3 +72,15 @@ if __name__ == '__main__':
 #     'X-App-Token': MY_APP_TOKEN_ID,
 # }
 # response = requests.get(api_url, headers=headers, params=other_params)
+
+
+# CENSUS ETL TRACK
+
+# Init db -> Call Census API -> ETL to df -> Save as CSV (for timestamp) -> Convert df to dictionary
+# Updated db -> Check the date of the CSV file [Out of date] -> Call Census API -> ETL to df -> Save as CSV (for timestamp) -> Convert df to dictionary
+#                                                  [In date] -> Don't do anything for populations
+
+
+# Decouple population task from Main_Ops()
+# Set up conditional within nested function to just be called by update db
+# Allow init db to bypass and just call base functions to retrive data
