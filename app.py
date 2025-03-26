@@ -6,9 +6,11 @@ import config as C
 # Import dependencies
 from pathlib import Path
 
-# Add last decorator to include ETL and DB Creation/Updating
-@app.before_first_request
-def init():
+
+
+# Run with app_context to try to execute on top of app declaration
+# if that doesn't work than move to blueprinting Flask or creating it modularly down stream
+with app.app_context():
     # Run All DB Tests and Ops
     main.run_db_ops(C.DB_PATH, C.NYC_OPEN_KEY)
 
