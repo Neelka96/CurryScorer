@@ -53,7 +53,6 @@ BOROUGHS = (
 CUISINES = (
     'Afghan',
     'African',
-    'American',
     'Armenian',
     'Australian',
     'Bangladeshi',
