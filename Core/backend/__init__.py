@@ -15,7 +15,7 @@ import config as C
 #################################################
 app = Flask(__name__, template_folder = C.TEMPLATE_DIR)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto = 1, x_host = 1)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}}, send_wildcard = True)
 app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
@@ -32,7 +32,7 @@ app.url_map.strict_slashes = False
 
 # Endpoint for home
 @app.route('/')
-@cross_origin(origins="*")
+# @cross_origin(origins="*")
 def home():
     '''
     Home endpoint for the API.
@@ -45,7 +45,7 @@ def home():
 
 # Endpoint for interactive heat map
 @app.route('/api/v1.0/map/')
-@cross_origin(origins="*")
+# @cross_origin(origins="*")
 def api_map():
     '''
     Returns restaurant markers with details for an interactive map.
@@ -75,7 +75,7 @@ def api_map():
 
 # Endpoint for bar chart
 @app.route('/api/v1.0/top-cuisines/')
-@cross_origin(origins="*")
+# @cross_origin(origins="*")
 def api_topCuisines():
     '''
     Retrieves aggregated counts for cuisines in a given borough.
@@ -122,7 +122,7 @@ def api_topCuisines():
 
 # Endpoint for total pie chart
 @app.route('/api/v1.0/cuisine-distributions/')
-@cross_origin(origins="*")
+# @cross_origin(origins="*")
 def api_cuisine_pie():
     '''
     Returns the percentage distribution of different ethnic cuisines across the city.
@@ -158,7 +158,7 @@ def api_cuisine_pie():
 
 
 @app.route('/api/v1.0/borough-summaries/')
-@cross_origin(origins="*")
+# @cross_origin(origins="*")
 def api_borough_summary():
     with Session() as session:
         stmt = (
