@@ -1,44 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Restaurant Dashboard</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <meta charset="UTF-8">
+  <title>CurryScorer Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap CSS (via CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" 
+        integrity="sha256-sA+e2E8Jr2tGQARtjvkw+LZ+GljYB3Z7ty3uDkLhCwk=" 
+        crossorigin=""/>
+  
+  <!-- Custom CSS (optional) -->
   <style>
-    #map { height: 400px; margin-bottom: 20px; }
-    canvas { max-width: 600px; margin: 20px auto; display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #f0f0f0; }
+    body {
+      padding-top: 70px;
+    }
+    #map {
+      height: 400px;
+    }
+    .chart-container {
+      height: 400px;
+    }
   </style>
 </head>
 <body>
-
-<h1>NYC Restaurant Dashboard</h1>
-
-<div id="map"></div>
-<canvas id="barChart"></canvas>
-<canvas id="pieChart"></canvas>
-
-<h2>Borough Summary</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Borough</th>
-      <th>Restaurant Count</th>
-      <th>Average Rating</th>
-      <th>Restaurants per Capita</th>
-    </tr>
-  </thead>
-  <tbody id="boroughTableBody"></tbody>
-</table>
-
-<!-- External Libraries -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</script>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">CurryScorer Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+              aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <!-- Add additional nav items if needed -->
+          <li class="nav-item">
+            <a class="nav-link" href="#mapSection">Map</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#barChartSection">Bar Chart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#pieChartSection">Pie Chart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#tableSection">Borough Summary</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Content Container -->
+  <div class="container">
+    <!-- Map Section -->
+    <section id="mapSection" class="my-4">
+      <h2>Interactive Map</h2>
+      <p>This map displays restaurant locations and density using Leaflet.</p>
+      <div id="map" class="border rounded"></div>
+    
+    </section>
+    
+    <!-- Bar Chart Section -->
+    <section id="barChartSection" class="my-4">
+      <h2>Top Ethnic Cuisines by Borough</h2>
+      <p>This bar chart shows the most common cuisines in each borough using Plotly or D3.</p>
+      <div id="barChart" class="chart-container border rounded"></div>
+    </section>
+    
+    <!-- Pie Chart Section -->
+    <section id="pieChartSection" class="my-4">
+      <h2>Ethnic Cuisine Distribution</h2>
+      <p>This pie chart illustrates the percentage representation of different ethnic cuisines across NYC.</p>
+      <div id="pieChart" class="chart-container border rounded"></div>
+    </section>
+    
+    <!-- Borough Summary Table Section -->
+    <section id="tableSection" class="my-4">
+      <h2>Borough Comparison Table</h2>
+      <p>This table compares the number of ethnic restaurants per borough, along with additional statistics.</p>
+      <div id="summaryTable" class="table-responsive">
+        <!-- You can use a table here; example below -->
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Borough</th>
+              <th>Total Restaurants</th>
+              <th>Average Rating</th>
+              <th>Restaurants per Capita</th>
+            </tr>
+          </thead>
+          <tbody id="boroughTableBody">
+            <!-- Dynamic content populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  
+  <!-- Bootstrap Bundle with Popper (via CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Leaflet.js -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" 
+          integrity="sha256-o9N1j7k+g9J8LC+XAMXDtG3Jy/qL6+9P7vXJkq3o0FQ=" 
+          crossorigin=""></script>
+          <script src="js/logic.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
 
