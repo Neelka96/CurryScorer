@@ -75,7 +75,12 @@ const boroughCuisineData = {
     { cuisine: 'Indian', count: 100 },
     { cuisine: 'Chinese', count: 95 },
     { cuisine: 'Korean', count: 80 }
-  ]
+  ],
+  Staten_Island: [
+    { cuisine: 'Indian', count: 100 },
+    { cuisine: 'Chinese', count: 95 },
+    { cuisine: 'Korean', count: 80 }
+  ],
 };
 
 // Extract borough names
