@@ -87,14 +87,23 @@ const pieTrace = {
   values: cuisineDistributionData.map(item => item.percentage),
   type: 'pie',
   textinfo: 'label+percent',
-  hoverinfo: 'label+percent+value'
+  hoverinfo: 'label+percent+value',
+  domain: {
+    x: [0, 1], // full width
+    y: [0, 1]  // full height
+  }
 };
 
 const pieLayout = {
-  title: 'Cuisine Distribution in NYC'
+  title: 'Cuisine Distribution in NYC',
+  height: 400, // Increase overall chart height
+  width: 400,  // Increase overall chart width
+  margin: { t: 40, l: 40, r: 40, b: 40 } 
 };
 
 Plotly.newPlot('pieChart', [pieTrace], pieLayout);
+
+
 
 // ==================
 // Borough Summary Table
