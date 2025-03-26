@@ -1,7 +1,7 @@
 # Import dependencies
 from sqlalchemy import func, select
 from flask import Flask, jsonify, request, render_template
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from werkzeug.middleware.proxy_fix import ProxyFix
 import datetime as dt
 
@@ -20,10 +20,10 @@ app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
 # Endpoint Declarations
-heat_map_node = '/api/v1.0/map/'
-top_cuisines_node = '/api/v1.0/top-cuisines/'
-cuisine_dist_node = '/api/v1.0/cuisine-distributions/'
-borough_summary_node = '/api/v1.0/borough-summaries/'
+# heat_map_node = '/api/v1.0/map/'
+# top_cuisines_node = '/api/v1.0/top-cuisines/'
+# cuisine_dist_node = '/api/v1.0/cuisine-distributions/'
+# borough_summary_node = '/api/v1.0/borough-summaries/'
 
 
 #################################################
@@ -32,6 +32,7 @@ borough_summary_node = '/api/v1.0/borough-summaries/'
 
 # Endpoint for home
 @app.route('/')
+@cross_origin(origins="*")
 def home():
     '''
     Home endpoint for the API.
@@ -43,7 +44,8 @@ def home():
 
 
 # Endpoint for interactive heat map
-@app.route(heat_map_node)
+@app.route('/api/v1.0/map/')
+@cross_origin(origins="*")
 def api_map():
     '''
     Returns restaurant markers with details for an interactive map.
@@ -67,12 +69,13 @@ def api_map():
             }
         for r in results]
     desc = 'Retrieves restaurant details for interactive heat map.'
-    data_nest = api.forge_json(heat_map_node, data, desc)
+    data_nest = api.forge_json('/api/v1.0/map/', data, desc)
     return jsonify(data_nest)
 
 
 # Endpoint for bar chart
-@app.route(top_cuisines_node)
+@app.route('/api/v1.0/top-cuisines/')
+@cross_origin(origins="*")
 def api_topCuisines():
     '''
     Retrieves aggregated counts for cuisines in a given borough.
@@ -113,12 +116,13 @@ def api_topCuisines():
         for r in results]
     desc = 'Retrieves aggregated counts for cuisines in given borough.'
     params = {'borough': boro_param}
-    data_nest = api.forge_json(top_cuisines_node, data, desc, params)
+    data_nest = api.forge_json('/api/v1.0/top-cuisines/', data, desc, params)
     return jsonify(data_nest)
 
 
 # Endpoint for total pie chart
-@app.route(cuisine_dist_node)
+@app.route('/api/v1.0/cuisine-distributions/')
+@cross_origin(origins="*")
 def api_cuisine_pie():
     '''
     Returns the percentage distribution of different ethnic cuisines across the city.
@@ -149,11 +153,12 @@ def api_cuisine_pie():
             }
         for r in results]
     desc = 'Retrieves percent distribution of all cuisines across NYC.'
-    data_nest = api.forge_json(cuisine_dist_node, data, desc)
+    data_nest = api.forge_json('/api/v1.0/cuisine-distributions/', data, desc)
     return jsonify(data_nest)
 
 
-@app.route(borough_summary_node)
+@app.route('/api/v1.0/borough-summaries/')
+@cross_origin(origins="*")
 def api_borough_summary():
     with Session() as session:
         stmt = (
@@ -175,7 +180,7 @@ def api_borough_summary():
             }
         for r in results]
     desc = 'Retrieves summary statistics per each borough.'
-    data_nest = api.forge_json(borough_summary_node, data, desc)
+    data_nest = api.forge_json('/api/v1.0/borough-summaries/', data, desc)
     return jsonify(data_nest)
 
 
