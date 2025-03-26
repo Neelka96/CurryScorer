@@ -2,6 +2,7 @@
 from sqlalchemy import func, select
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 import datetime as dt
 
 # Import subpackage dependencies
@@ -13,8 +14,10 @@ import config as C
 # Flask Setup
 #################################################
 app = Flask(__name__, template_folder = C.TEMPLATE_DIR)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto = 1, x_host = 1)
 CORS(app)
 app.json.sort_keys = False
+app.url_map.strict_slashes = False
 
 # Endpoint Declarations
 heat_map_node = '/api/v1.0/map/'

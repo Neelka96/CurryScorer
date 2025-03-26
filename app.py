@@ -5,7 +5,6 @@ import config as C
 
 # Import dependencies
 from pathlib import Path
-import sys
 
 
 
@@ -13,7 +12,6 @@ import sys
 # if that doesn't work than move to blueprinting Flask or creating it modularly down stream
 with app.app_context():
     # Run All DB Tests and Ops
-    print(sys.path)
     main.run_db_ops(C.DB_PATH, C.NYC_OPEN_KEY)
 
 # Serve up flask API
