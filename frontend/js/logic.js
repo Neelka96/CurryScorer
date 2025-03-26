@@ -60,9 +60,34 @@ mapData.forEach(loc => {
 // Bar Chart (Plotly)
 // ==================
 
+const boroughCuisineData = {
+  Manhattan: [
+    { cuisine: 'Italian', count: 120 },
+    { cuisine: 'Chinese', count: 95 },
+    { cuisine: 'American', count: 80 }
+  ],
+  Brooklyn: [
+    { cuisine: 'Caribbean', count: 110 },
+    { cuisine: 'Mexican', count: 90 },
+    { cuisine: 'American', count: 85 }
+  ],
+  Queens: [
+    { cuisine: 'Indian', count: 100 },
+    { cuisine: 'Chinese', count: 95 },
+    { cuisine: 'Korean', count: 80 }
+  ]
+};
+
+// Extract borough names
+const boroughs = Object.keys(boroughCuisineData);
+
+// Create initial trace (default: Manhattan)
+const defaultBorough = boroughs[0];
+const initialData = boroughCuisineData[defaultBorough];
+
 const barTrace = {
-  x: topCuisinesData.map(item => item.cuisine),
-  y: topCuisinesData.map(item => item.count),
+  x: initialData.map(item => item.cuisine),
+  y: initialData.map(item => item.count),
   type: 'bar',
   marker: {
     color: 'rgba(55,128,191,0.7)',
@@ -70,10 +95,34 @@ const barTrace = {
   }
 };
 
+// Create dropdown menu options
+const updatemenus = [
+  {
+    buttons: boroughs.map(borough => ({
+      method: 'update',
+      label: borough,
+      args: [
+        [{
+          x: [boroughCuisineData[borough].map(item => item.cuisine)],
+          y: [boroughCuisineData[borough].map(item => item.count)]
+        }],
+        { title: `Top Cuisines in ${borough}` }
+      ]
+    })),
+    direction: 'down',
+    showactive: true,
+    x: 0,
+    xanchor: 'left',
+    y: 1.15,
+    yanchor: 'top'
+  }
+];
+
 const barLayout = {
-  title: 'Top Cuisines by Count',
+  title: `Top Cuisines in ${defaultBorough}`,
   xaxis: { title: 'Cuisine' },
-  yaxis: { title: 'Count' }
+  yaxis: { title: 'Count' },
+  updatemenus: updatemenus
 };
 
 Plotly.newPlot('barChart', [barTrace], barLayout);
