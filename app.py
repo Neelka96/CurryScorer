@@ -18,9 +18,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def test():
-    root = [file for file in Path('/')]
+    root = [file for file in Path('/').iterdir()]
     files1 = [file for file in Path('/home/site/shared').iterdir()]
-    file2 = [file for file in Path('/home/shared')]
+    file2 = [file for file in Path('/home/shared').iterdir()]
     to_return = (
             f'Root ~: {root}\n'
             f'/home/site/shared: {files1}\n'
