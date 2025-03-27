@@ -18,7 +18,7 @@ import config as C
 #################################################
 app = Flask(__name__, template_folder = C.TEMPLATE_DIR)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto = 1, x_host = 1)
-CORS(app, resources={r"/api/*": {"origins": "*"}}, methods=["GET", "POST"], allow_headers=["Content-Type"])
+CORS(app)
 app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
