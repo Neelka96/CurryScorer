@@ -15,22 +15,27 @@ UPDATE_INTERVAL = timedelta(weeks = 2)
 ################################################################################################################################################
 # GRABBING ENV VARIABLES
 load_dotenv()
-NYC_OPEN_KEY = os.environ.get('NYC_OPEN_KEY')
-CENSUS_KEY = os.environ.get('CENSUS_KEY')
+NYC_OPEN_KEY = os.environ.get('NYC_OPEN_KEY')   # Retrieve NYC Open Key
+CENSUS_KEY = os.environ.get('CENSUS_KEY')   # Retrieves Census Key
+ENV = os.environ.get('ENV', 'development')  # Retrieved ENV value for dev/production
 ################################################################################################################################################
 
-# Paths
-ROOT_DIR = Path(__file__).resolve().parent
-TEMPLATE_DIR = ROOT_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
+# Non Variable Paths
+CORE_DIR = Path(__file__).resolve().parent / 'Core'
+TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
-HOME_DIR = Path('/home')
-FASTFOOD_CSV = HOME_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
-# POPULATION_CLEAN = HOME_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-# TESTING MOVE POPULATION DATA TO ROOT FOR NOW TO SEE HOW '/HOME' RESPONDS
-POPULATION_CLEAN = ROOT_DIR / 'census_population.csv'
+# Variable Paths
+if ENV == 'production':
+    STORAGE = Path('/home/site/shared')
+    DB_PATH = STORAGE / 'courier.sqlite'
+else:
+    STORAGE = CORE_DIR / 'resources'
+    DB_PATH = STORAGE / 'courier_dev.sqlite'
 
-DB_PATH = HOME_DIR / 'courier.sqlite'
-ENGINE_URI = f'sqlite:///{DB_PATH}'
+# Persistent Storage in both environments
+FASTFOOD_CSV = STORAGE / 'fastfood.csv'
+POPULATION_CLEAN = STORAGE / 'census_population.csv'
+ENGINE_URI = f'sqlite:///{DB_PATH}' # Full engine path to avoid hardcoding later
 
 
 # Filter Constants

@@ -77,7 +77,7 @@ function updatePlot(borough) {
 }
 
 // Event listener for the dropdown to update the plot on selection change
-document.getElementById('boroughSelect').addEventListener('change', () => {
+document.getElementById('boroughSelect').addEventListener('change', function() {
   const selectedBorough = this.value;
   updatePlot(selectedBorough);
 });
@@ -121,17 +121,9 @@ d3.json(pie_url).then(data => {
   const pieLayout = {
     title: 'Ethnic Cuisine Distribution',
     // Give the chart a larger footprint
-    width: 600,
-    height: 500,
-    margin: { t: 80, b: 80, l: 40, r: 40 },
-    // Move the legend to the bottom (horizontal)
-    legend: {
-      orientation: 'h',
-      x: 0.5,
-      xanchor: 'center',
-      y: -0.1,   // move legend below the chart
-      yanchor: 'top'
-    }
+    width: 500,
+    height: 400,
+    margin: { t: 40, b: 40, l: 20, r: 20 },
   };
 
   Plotly.newPlot('pieChart', [pieTrace], pieLayout);
