@@ -1,58 +1,87 @@
-# Import dependencies
-from flask import request
-from typing import Any
+# LATEST CHANGELOG HERE:
+#   - Adding contextlib @contextmanager decorator to handle session logic
+#       + Therefore changing import of session to this location instead
+#   - Adding sqlalchemy "Select" class for function hint
+#   - Adding execute_query utility function to combine -> reduce boilerplate
+#       
 
+
+# Import dependencies
+from contextlib import contextmanager
+from flask import request
+from sqlalchemy import Select, Row
+from sqlalchemy.orm import Session as SessionClass
+from collections.abc import Sequence, Generator
+
+from .database import Session
 
 # Backend Helpers
+
+# Context management handler for sessions for centralized handling
+@contextmanager
+def get_session() -> Generator[SessionClass]:
+    session = Session()
+    try:
+        yield session
+    except Exception as e:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+# Utility For executing session requests
+def execute_query(sql_stmt: Select) -> Sequence[Row]:
+    with get_session() as session:
+        return session.execute(sql_stmt).all()
+
 
 # Automatic Metadata Creation
 def forge_metadata(
         route: str
         ,length: int
         ,desc: str
-        ,params: dict[str, str]
-        ) -> dict[str, Any]:
+        ,params: dict
+        ) -> dict:
     '''
-    Creates dictionary of API request and response information, to be nested with API response.
+    Creates dictionary of API request and response information.
 
     Args:
-        route (str): The current API request route to be displayed.
-        length (int): The length of API response to be displayed.
-        desc (str): The written description of the API to be displayed.
-        params (dict[str, str]): The parameters (if any) used to filter API request to be displayed.
+        route (str): The current API request route.
+        length (int): The length of the response.
+        desc (str): The written description of the API endpoint.
+        params (dict): The parameters used to filter request.
     
     Returns:
-        dict[str, Any]: A dictionary containing various data points about the API request and response.
+        dict: A dictionary containing metadata.
     '''
-    metadata = {
+    return {
         'current_route': route
         ,'home_route': request.host
         ,'data_points': length
-        ,'info': desc
-        ,'params': params
+        ,'info': desc or None
+        ,'params': params or {}
         ,'format': 'json'
     }
-    return metadata
 
 # Nests metadata and results together in one object 
 def forge_json(
         route: str
-        ,nest: dict[str, Any]
-        ,desc: str = 'None'
-        ,params: dict[str, str] = 'None'
-        ) -> dict[str, Any]:
+        ,nest: dict
+        ,desc: str
+        ,params: dict = None
+        ) -> dict:
     '''
-    Creates dictionary of nested API metadata and the API response. Outer wrapper that's actually called in script.
-    Most arguments are abstracted or directly passed into forge_metadata() for displaying in JSON nest.
+    Creates dictionary of nested API metadata and the API response.
 
     Args:
-        route (str): The current API request route to be fed to forge_metadata.
-        nest (dict[str, Any]): Actual API resonse, currently only length is abstracted from it.
-        desc (str): The written description of the API to be fed to forge_metadata.
-        params (dict[str, str]): The parameters (if any) used to filter API request to be fed to forge_metadata.
+        route (str): The current API request route.
+        nest (dict): The actual resonse.
+        desc (str): The written description of the API.
+        params (dict, optional): The parameters used to filter request.
 
     Returns:
-        dict[str, Any]: A dictionary containing both the metadata and the API response ready for Flask's Jsonify().
+        dict: A dictionary containing API response and metadata.
     '''
     json_api = {
         'metadata': forge_metadata(route, len(nest), desc, params)

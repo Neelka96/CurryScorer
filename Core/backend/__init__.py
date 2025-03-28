@@ -1,16 +1,13 @@
-import logging
-logging.getLogger('flask_cors').level = logging.DEBUG
-
 # Import dependencies
 from sqlalchemy import func, select
 from flask import Flask, jsonify, request, render_template
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 import datetime as dt
 
 # Import subpackage dependencies
-from . import backend as api
-from . database import Restaurants, Boroughs, Cuisines, Session
+from .backend import execute_query, forge_json
+from .database import Restaurants, Boroughs, Cuisines
 import config as C
 
 #################################################
@@ -23,10 +20,10 @@ app.json.sort_keys = False
 app.url_map.strict_slashes = False
 
 # Endpoint Declarations
-# heat_map_node = '/api/v1.0/map/'
-# top_cuisines_node = '/api/v1.0/top-cuisines/'
-# cuisine_dist_node = '/api/v1.0/cuisine-distributions/'
-# borough_summary_node = '/api/v1.0/borough-summaries/'
+map_node = '/api/v1.0/map/'
+topCuisines_node = '/api/v1.0/top-cuisines/'
+cuisineDist_node = '/api/v1.0/cuisine-distributions/'
+boroughSummary_node = '/api/v1.0/borough-summaries/'
 
 
 #################################################
@@ -35,7 +32,6 @@ app.url_map.strict_slashes = False
 
 # Endpoint for home
 @app.route('/')
-# @cross_origin(origins="*")
 def home():
     '''
     Home endpoint for the API.
@@ -47,38 +43,50 @@ def home():
 
 
 # Endpoint for interactive heat map
-@app.route('/api/v1.0/map/')
-# @cross_origin(origins="*")
+@app.route(map_node)
 def api_map():
     '''
     Returns restaurant markers with details for an interactive map.
-    Each marker includes name, latitude, longitude, borough, cuisine, etc.
 
     Returns:
-        flask.Response: A JSON response containing heat map data.
+        flask.Response: A JSON response containing map data.
     '''
-    with Session() as session:
-        stmt = select(Restaurants)
-        results = session.scalars(stmt).all()
-        data = [
-            {
-                'id': r.id,
-                'name': r.name,
-                'lat': r.lat,
-                'lng': r.lng,
-                'borough': r.borough.borough,
-                'cuisine': r.cuisine.cuisine,
-                'inspection_date': dt.date.isoformat(r.inspection_date)
-            }
-        for r in results]
+    stmt = (
+        select(
+            Restaurants.id
+            ,Restaurants.name
+            ,Restaurants.lat
+            ,Restaurants.lng
+            ,Boroughs.borough
+            ,Cuisines.cuisine
+            ,Restaurants.inspection_date
+        ).join(
+            Boroughs
+            ,Boroughs.borough_id == Restaurants.borough_id
+        ).join(
+            Cuisines
+            ,Cuisines.cuisine_id == Restaurants.cuisine_id
+        )
+    )
+    results = execute_query(stmt)
+    data = [
+        {
+            'id': r.id,
+            'name': r.name,
+            'lat': r.lat,
+            'lng': r.lng,
+            'borough': r.borough,
+            'cuisine': r.cuisine,
+            'inspection_date': dt.date.isoformat(r.inspection_date)
+        }
+    for r in results]
     desc = 'Retrieves restaurant details for interactive heat map.'
-    data_nest = api.forge_json('/api/v1.0/map/', data, desc)
+    data_nest = forge_json(map_node, data, desc)
     return jsonify(data_nest)
 
 
 # Endpoint for bar chart
-@app.route('/api/v1.0/top-cuisines/')
-# @cross_origin(origins="*")
+@app.route(topCuisines_node)
 def api_topCuisines():
     '''
     Retrieves aggregated counts for cuisines in a given borough.
@@ -90,42 +98,40 @@ def api_topCuisines():
         flask.Response: A JSON response containing cuisine counts for the specified borough.
     '''
     boro_param = request.args.get('borough')
-    with Session() as session:
-        count_ids = func.count(Restaurants.id)
-        stmt = (
-            select(
-                Cuisines.cuisine.label('cuisine')
-                ,count_ids.label('count')
-            ).join(
-                Restaurants
-                ,Restaurants.cuisine_id == Cuisines.cuisine_id
-            ).join(
-                Boroughs
-                ,Boroughs.borough_id == Restaurants.borough_id
-            ).where(
-                Boroughs.borough == boro_param
-            ).group_by(
-                Cuisines.cuisine
-            ).order_by(
-                count_ids.desc()
-            )
+    count_ids = func.count(Restaurants.id)
+    stmt = (
+        select(
+            Cuisines.cuisine.label('cuisine')
+            ,count_ids.label('count')
+        ).join(
+            Restaurants
+            ,Restaurants.cuisine_id == Cuisines.cuisine_id
+        ).join(
+            Boroughs
+            ,Boroughs.borough_id == Restaurants.borough_id
+        ).where(
+            Boroughs.borough == boro_param
+        ).group_by(
+            Cuisines.cuisine
+        ).order_by(
+            count_ids.desc()
         )
-        results = session.execute(stmt).all()
-        data = [
-            {
-                'cuisine': r.cuisine,
-                'count': r.count
-            } 
+    )
+    results = execute_query(stmt)
+    data = [
+        {
+            'cuisine': r.cuisine,
+            'count': r.count
+        } 
         for r in results]
     desc = 'Retrieves aggregated counts for cuisines in given borough.'
     params = {'borough': boro_param}
-    data_nest = api.forge_json('/api/v1.0/top-cuisines/', data, desc, params)
+    data_nest = forge_json(topCuisines_node, data, desc, params)
     return jsonify(data_nest)
 
 
 # Endpoint for total pie chart
-@app.route('/api/v1.0/cuisine-distributions/')
-# @cross_origin(origins="*")
+@app.route(cuisineDist_node)
 def api_cuisine_pie():
     '''
     Returns the percentage distribution of different ethnic cuisines across the city.
@@ -133,57 +139,52 @@ def api_cuisine_pie():
     Returns:
         flask.Response: A JSON response containing cuisine distribution data.
     '''
-    with Session() as session:
-        stmt_total = select(func.count(Restaurants.id))
-        total = session.scalars(stmt_total).one()
-
-        stmt = (
-            select(
-                Cuisines.cuisine.label('cuisine')
-                ,func.count(Restaurants.id).label('count')
-            ).join(
-                Restaurants
-                ,Restaurants.cuisine_id == Cuisines.cuisine_id
-            ).group_by(Cuisines.cuisine)
-        )
-
-        results = session.execute(stmt).all()
-        data = [
-            {
-                'cuisine': r.cuisine
-                ,'count': r.count
-                ,'percent': (r.count / total * 100)
-            }
-        for r in results]
+    stmt_total = select(func.count(Restaurants.id))
+    total = execute_query(stmt_total)[0][0]
+    stmt = (
+        select(
+            Cuisines.cuisine.label('cuisine')
+            ,func.count(Restaurants.id).label('count')
+        ).join(
+            Restaurants
+            ,Restaurants.cuisine_id == Cuisines.cuisine_id
+        ).group_by(Cuisines.cuisine)
+    )
+    results = execute_query(stmt)
+    data = [
+        {
+            'cuisine': r.cuisine
+            ,'count': r.count
+            ,'percent': (r.count / total * 100)
+        }
+    for r in results]
     desc = 'Retrieves percent distribution of all cuisines across NYC.'
-    data_nest = api.forge_json('/api/v1.0/cuisine-distributions/', data, desc)
+    data_nest = forge_json(cuisineDist_node, data, desc)
     return jsonify(data_nest)
 
 
-@app.route('/api/v1.0/borough-summaries/')
-# @cross_origin(origins="*")
+@app.route(boroughSummary_node)
 def api_borough_summary():
-    with Session() as session:
-        stmt = (
-            select(
-                Boroughs.borough.label('borough')
-                ,func.count(Restaurants.id).label('restaurant_count')
-                ,Boroughs.population.label('population')
-            ).join(
-                Restaurants
-                ,Restaurants.borough_id == Boroughs.borough_id
-            ).group_by(Boroughs.borough)
-        )
-        results = session.execute(stmt).all()
-        data = [
-            {
-                'borough': r.borough
-                ,'restaurant_count': r.restaurant_count
-                ,'population': r.population
-            }
-        for r in results]
+    stmt = (
+        select(
+            Boroughs.borough.label('borough')
+            ,func.count(Restaurants.id).label('restaurant_count')
+            ,Boroughs.population.label('population')
+        ).join(
+            Restaurants
+            ,Restaurants.borough_id == Boroughs.borough_id
+        ).group_by(Boroughs.borough)
+    )
+    results = execute_query(stmt)
+    data = [
+        {
+            'borough': r.borough
+            ,'restaurant_count': r.restaurant_count
+            ,'population': r.population
+        }
+    for r in results]
     desc = 'Retrieves summary statistics per each borough.'
-    data_nest = api.forge_json('/api/v1.0/borough-summaries/', data, desc)
+    data_nest = forge_json(boroughSummary_node, data, desc)
     return jsonify(data_nest)
 
 

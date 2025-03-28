@@ -104,10 +104,14 @@ def enforce_sqlite_fks(dbapi, conn_record):
     Args:
         dbapi: The database API.
         conn_record: The connection record.
+    
+    Returns:
+        int: Returns 0 on success.
     '''
     cursor = dbapi.cursor()
     cursor.execute('PRAGMA foreign_keys=ON;')
     cursor.close()
+    return 0
 
 # Bind session to engine now that modifications to engine are done
 Session = sessionmaker(bind = engine)
