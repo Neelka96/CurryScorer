@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import io
 import datetime as dt
-from tenacity import retry, stop_after_attempt, wait_fixed, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Bring in custom logger
 from Core.log_config import init_log
