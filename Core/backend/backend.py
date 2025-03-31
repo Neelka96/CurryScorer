@@ -1,40 +1,9 @@
-# LATEST CHANGELOG HERE:
-#   - Adding contextlib @contextmanager decorator to handle session logic
-#       + Therefore changing import of session to this location instead
-#   - Adding sqlalchemy "Select" class for function hint
-#   - Adding execute_query utility function to combine -> reduce boilerplate
-#       
-
-
 # Import dependencies
-from contextlib import contextmanager
 from flask import request
-from sqlalchemy import Select, Row
-from sqlalchemy.orm import Session as SessionClass
-from collections.abc import Sequence, Generator
 
-from .database import Session
-
-# Backend Helpers
-
-# Context management handler for sessions for centralized handling
-@contextmanager
-def get_session() -> Generator[SessionClass]:
-    session = Session()
-    try:
-        yield session
-    except Exception as e:
-        session.rollback()
-        raise
-    finally:
-        session.close()
-
-
-# Utility For executing session requests
-def execute_query(sql_stmt: Select) -> Sequence[Row]:
-    with get_session() as session:
-        return session.execute(sql_stmt).all()
-
+# Bring in custom logger
+from Core.log_config import init_log
+log = init_log(__name__)
 
 # Automatic Metadata Creation
 def forge_metadata(
@@ -43,18 +12,18 @@ def forge_metadata(
         ,desc: str
         ,params: dict
         ) -> dict:
-    '''
-    Creates dictionary of API request and response information.
+    '''Helps create JSON via function passing.
 
     Args:
-        route (str): The current API request route.
-        length (int): The length of the response.
-        desc (str): The written description of the API endpoint.
-        params (dict): The parameters used to filter request.
-    
+        route (str): API call route.
+        length (int): Length of returned JSON.
+        desc (str): API description.
+        params (dict): Parameters passed in API call.
+
     Returns:
-        dict: A dictionary containing metadata.
+        dict: Inner metadata nest.
     '''
+    log.debug('Inner wrapper for forge_json called.')
     return {
         'current_route': route
         ,'home_route': request.host
@@ -69,20 +38,20 @@ def forge_json(
         route: str
         ,nest: dict
         ,desc: str
-        ,params: dict = None
+        ,params: dict | None = None
         ) -> dict:
-    '''
-    Creates dictionary of nested API metadata and the API response.
+    '''Completes full JSON-esque packaging.
 
     Args:
-        route (str): The current API request route.
-        nest (dict): The actual resonse.
-        desc (str): The written description of the API.
-        params (dict, optional): The parameters used to filter request.
+        route (str): API call route.
+        nest (dict): Returned JSON.
+        desc (str): API description.
+        params (dict | None, optional): Parameters passed in API call. Defaults to None.
 
     Returns:
-        dict: A dictionary containing API response and metadata.
+        dict: Full python style JSON ready for Flask export.
     '''
+    log.debug('Creating custom JSON Metadata.')
     json_api = {
         'metadata': forge_metadata(route, len(nest), desc, params)
         ,'results': nest

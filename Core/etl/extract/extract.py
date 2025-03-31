@@ -3,84 +3,54 @@ import pandas as pd
 import requests
 import io
 import datetime as dt
-from time import sleep
+from tenacity import retry, stop_after_attempt, wait_fixed, wait_exponential
 
-# Import package and subpackage requirements for core building
-import config as C
+# Bring in custom logger
+from Core.log_config import init_log
+log = init_log(__name__)
 
-
-# Extraction Helpers
 
 def get_df(
         url: str
-        ,params: dict[str, str] = None
-        ,set_name: str = None
-        ,timeout_req: int = C. API_TIMEOUT
-        ,retries: int = C.API_RETRY
-        ,delay: int = C.API_DELAY
+        ,params: dict[str, int | str]
+        ,config: dict[str, int | str]
         ) -> pd.DataFrame:
-    '''
-    Fetches data from the specified URL and converts it into a pandas DataFrame. Loops for API request retries if a request fails. Default parameters are in place handling request failure.
+    '''Inner wrapper for requests to Socrata without SODA package using tenacity for retries.
 
     Args:
-        url (str): The URL to fetch data from.
-        params (dict, optional): Query parameters for the API request.
-        set_name (str, optional): The name of the data set being requested to be displayed for debugging purposes.
-        timeout_req (int, optional): Seconds allowed before timing out API request.
-        retries (int, optional): Max retries allowed per API request.
-        delay (int, optional): Seconds to wait between retries of API request.
+        url (str): Base URL for call.
+        params (dict[str, int  |  str]): Parameters for call.
+        config (dict[str, int  |  str]): Config dictionary for API calls.
 
     Returns:
-        pd.DataFrame: A DataFrame containing the data retrieved from the API.
-
-    Raises:
-        requests.exceptions.Timeout: If the request times out after retries.
-        requests.exceptions.RequestException: For other request-related errors.
+        pd.DataFrame: Requested data converted to CSV style.
     '''
-    # Loops for the number of retries set
-    for attempt in range(1, retries + 1):
-        # Tries to call API using socrata (SODA) querying
+    log.debug('Call to get_df() outer wrapper made.')
+    @retry(stop = stop_after_attempt(config['RETRY']), wait = wait_exponential(multiplier = 1, min = config['DELAY'], max = 30))  # Loops for the number of retries set using retry decorator
+    def get_df_with_retry(url, params, config):
+        log.debug('Entering tenacity retry loop.')
         try:
-            # Times out after set number of seconds
-            response = requests.get(url, params, timeout = timeout_req)
-            response.raise_for_status()     # Raise on bad response status
-
-            # Print successful API return with attempt number
-            print(f'Successful API request for {set_name} made! Attempt: {attempt}.')
-            
-            break   # Break loop early on success
-        
-        # If it can't retrieve data from timeout retry after delay
-        except requests.exceptions.Timeout as e:
-            print(f'Timeout on API request for {set_name}. Attempt: {attempt}. {e}')
-
-            # Checks if retries is at limit
-            if attempt < retries:
-                print(f'Retrying in {delay} seconds.')
-                sleep(delay)
-
-            # If it is exit with failure.
-            else:
-                raise e
-        
-        # If there was an error besides timeout, exit function early with error
-        except requests.exceptions.RequestException as e:
-            raise e
-        
-    # Using io.StringIO to create pseudo CSV file for reading
-    csv = io.StringIO(response.content.decode('utf-8'))
-    return pd.read_csv(csv)
+            log.debug('Sending API request.')
+            response = requests.get(url, params, timeout = config['TIMEOUT'])
+            response.raise_for_status() # Raise on bad response status
+        except requests.exceptions.RequestException:
+            log.warning('Request exception error.', exc_info = True)
+            raise
+        log.debug('Successful API call. Returning DataFrame.')
+        return pd.read_csv(io.StringIO(response.content.decode('utf-8')))   # Using io.StringIO to create pseudo CSV file for reading
+    
+    return get_df_with_retry(url, params, config)
 
 
-def where_filter(years: int = C.INSPECTION_CUTOFF) -> str:
-    '''
-    Builds a `$where` filter for a Socrata SODA query of the `dohmh` dataset.
+
+def where_filter(years: int = None) -> str:
+    '''Filtering to reduce overhead data overhead during API call.
 
     Args:
-        years (int, optional): The number of years by which to filter the data.
+        years (int, optional): Defaults to None.
 
     Returns:
-        str: A string representing the `$where` clause for the query.
+        str: `$WHERE` clause string filter for parameters.
     '''
     # Build filter for date, to cutoff on a certain number of years (default 2)
     dateLimit = (dt.datetime.now() - dt.timedelta(days = years * 365)).isoformat()
