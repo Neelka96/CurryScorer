@@ -9,6 +9,7 @@ from .database import engine, Base, Boroughs, Cuisines, Restaurants
 
 # Bring in custom logger
 from .log_config import init_log
+log = init_log(__name__, file_out = True)
 
 
 class Pipeline():
@@ -31,7 +32,7 @@ class Pipeline():
             ref_seqs (dict): Reference sequences for transformations.
             data (dict): Stores intermediate datasets during the ETL process.
         '''
-        self.log = init_log(__name__, file_out = True)
+        self.log = log
         self.log.info('Initializing pipeline.')
         self.db_config = db_config
         self.api_config = api_config

@@ -17,8 +17,8 @@ def init_log(
     logger = log.getLogger(name)
     
     # Avoid adding handlers multiple times if already configured
-    if logger.hasHandlers():
-        return logger
+    # if logger.hasHandlers():
+    #     return logger
 
     # Set the log level to INFO
     logger.setLevel(log.INFO)
