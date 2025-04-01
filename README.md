@@ -19,9 +19,10 @@
     - [Python Dependencies](#python-dependencies)
 4. [Directory Structure & File Breakdown](#directory-structure--file-breakdown)
 5. [Deployment Details](#deployment-details)
-6. [Usage](#usage)
-7. [Limitations](#limitations)
-8. [Credits & Citations](#credits--citations)
+6. [Database & ORM Layer](#database--orm-layer)
+7. [Usage](#usage)
+8. [Limitations](#limitations)
+9. [Credits & Citations](#credits--citations)
 
 ---
 
@@ -202,6 +203,22 @@ The frontend is hosted via GitHub Pages, with index.html and associated JavaScri
 To ensure that all instances of the web app use a single instance of the database, a file share in an Azure Storage Account is linked to the web app. This integration guarantees a centralized courier_dev.sqlite database even when the web app scales across multiple instances. Future enhancements will include implementing a locking mechanism to prevent multiple simultaneous updates, ensuring data integrity during concurrent operations.  
 
 ---  
+
+
+## Database & ORM Layer
+CurryScorer leverages SQLAlchemy 2.0 ORM to manage all interactions with the database. Key measures include:
+
+- Schema Definition and Session Management:
+The database schema is defined in Core/database.py and is built exclusively using SQLAlchemy 2.0 ORM. This module also includes custom session management to ensure that all database interactions—whether for building the database or executing queries—are conducted within the ORM’s context.
+
+- Querying and Transactional Consistency:
+All queries and data modifications are handled via SQLAlchemy’s ORM layer, ensuring that transactions are managed with the latest best practices for reliability and performance. This design promotes clean and maintainable code, reducing the risk of SQL injection and other common database pitfalls.
+
+- Contextual Session Handling:
+SQLAlchemy’s context managers are used to guarantee that sessions are properly closed after operations, ensuring that the database remains consistent and that resource usage is optimized across both development and production environments.
+
+
+---
 
 ## Usage
 

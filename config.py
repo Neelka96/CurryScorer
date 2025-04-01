@@ -12,17 +12,16 @@ log = init_log(__name__)
 # GRABBING ENV VARIABLES
 load_dotenv()
 ENV = os.environ.get('ENV', 'development')  # Retrieved ENV value for dev/production
-log.info(f'Environment variables loaded in. Current env is {ENV}.')
+log.info(f'Environment variables loaded. ENV is {ENV}.')
 
 # Non Variable Paths
 CORE_DIR = Path(__file__).resolve().parent / 'Core'
 TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
-# Variable Paths - Random comment for test
+# Variable Paths
 DEF_STORAGE = Path('/mnt/shared')
 if ENV == 'production':
-    # STORAGE = Path(os.environ.get('STORAGE', DEF_STORAGE))
     STORAGE = DEF_STORAGE
     DB_PATH = STORAGE / 'courier.sqlite'
 elif ENV == 'development':
@@ -33,11 +32,12 @@ elif ENV is None:
     STORAGE = CORE_DIR / 'resources'
     DB_PATH = STORAGE / 'courier_dev.sqlite'
 
-log.info(f'Storage Path: {STORAGE}')
-log.info(f'DataBase Path: {DB_PATH}')
-
-if ENV == 'production' and STORAGE != Path(DEF_STORAGE):
+if ENV == 'production' and STORAGE != DEF_STORAGE:
     log.critical(f'Production storage path is incorrect: {STORAGE}')
+
+# Logs Storage & DataBase Paths for environment integrity
+log.info(f'Storage: {STORAGE}') if len(STORAGE.parts) <= 2 else log.info(f'Storage: .../{STORAGE.parts[-2]}/{STORAGE.parts[-1]}')
+log.info(f'DataBase: {DB_PATH.name}')
 
 
 # Paths for Persistent Storage Locally & Live

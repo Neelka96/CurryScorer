@@ -1,4 +1,7 @@
+# Import dependencies
 import logging as log
+import sys
+
 
 def init_log(
         name: str = None
@@ -17,14 +20,14 @@ def init_log(
     logger = log.getLogger(name)
     
     # Avoid adding handlers multiple times if already configured
-    # if logger.hasHandlers():
-    #     return logger
+    if logger.hasHandlers():
+        return logger
 
     # Set the log level to INFO
     logger.setLevel(log.INFO)
     
     # Create a stream handler (logs to console)
-    ch = log.StreamHandler()
+    ch = log.StreamHandler(sys.stdout)
     ch.setLevel(log.INFO)
     
     # Create a formatter with date/time, logger name, level, and message
@@ -39,7 +42,7 @@ def init_log(
 
     if file_out:
         # Add a file handler to log messages to a file
-        fh = log.FileHandler('app.log')
+        fh = log.FileHandler('app.log', mode = 'a', encoding = 'utf-8')
         fh.setLevel(log.INFO)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
