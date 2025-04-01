@@ -131,12 +131,12 @@ CurryScorer/
 │   └── log_config.py               # MODULE - Configured logger function for threading through project
 │
 ├── frontend/
-│   ├── js/                      # Javascript directory
-│   └── index.html               # Index html 
-│
-├── app.py                       # Main script to instantiate and run the pipeline.
-├── requirements.txt             # List of Python dependencies.
-└── README.md                    # This README file.
+│   └── js/                         # Javascript for import to index.html
+│       └── logic.js
+├── index.html                      # Index html 
+├── app.py                          # Main script to instantiate and run the pipeline.
+├── requirements.txt                # List of Python dependencies.
+└── README.md                       # This README file.
 ```
 
 ### Explanation of File & Directory Connections
@@ -165,7 +165,10 @@ Contains the database schema definitions and manages custom session handling for
 Provides a configured logging function to ensure consistent logging throughout the project, useful for both debugging and production monitoring.
 
 **frontend/:**
-Contains the user-facing components. The JavaScript files in js/ support interactive elements, while index.html is the main HTML file for the frontend interface.
+Contains the user-facing components. Currently only JavaScript. The files in js/ support interactive elements.
+
+**index.html:**
+The main HTML file for the frontend interface, included in the root for deployment to Github pages.
 
 **app.py:**
 Serves as the unified entry point. When run, it instantiates the ETL pipeline (by creating an instance of the Pipeline Class defined in Core/init.py) and calls its .run() method. This script handles both local execution and production deployment seamlessly.
