@@ -15,7 +15,7 @@ CORE_DIR = Path(__file__).resolve().parent / 'Core'
 TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
-# Variable Paths
+# Variable Paths - Adding comment for test deployment
 if ENV == 'production':
     STORAGE = os.environ.get('STORAGE')
     __DB_PATH__ = os.path.join(STORAGE, 'courier.sqlite')
