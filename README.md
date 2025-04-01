@@ -139,46 +139,50 @@ CurryScorer/
 │       └── logic.js
 ├── index.html                      # Index html 
 ├── app.py                          # Main script to instantiate and run the pipeline.
+├── .env                            # Important: required for environmental variables
 ├── requirements.txt                # List of Python dependencies.
 └── README.md                       # This README file.
 ```
 
 ### Explanation of File & Directory Connections
 
-**Core/resources/:**
-Contains essential data files. The required census_population.csv is used for data ingestion, while optional files like courier_dev.sqlite and fastfood.csv support extended functionalities.
+- **Core/resources/:**
+Contains essential data files. The required census_population.csv is used for data ingestion, while optional files like courier_dev.sqlite and fastfood.csv support extended functionalities.  
 
-**Core/backend/:**
-Houses the Flask backend components. The templates/ directory contains HTML templates (currently just home.html), while init.py and backend.py set up and manage the backend service.
+- **Core/backend/:**
+Houses the Flask backend components. The templates/ directory contains HTML templates (currently just home.html), while init.py and backend.py set up and manage the backend service.  
 
-**Core/etl/:**
-Encapsulates the ETL process:
+- **Core/etl/:**
+Encapsulates the ETL process:  
 
-**extract/:** Retrieves raw data using methods defined in init.py and helper functions in extract.py.
+  - **extract/:** Retrieves raw data using methods defined in init.py and helper functions in extract.py.  
 
-**transform.py**: Cleans and normalizes the extracted data.
+  - **transform.py**: Cleans and normalizes the extracted data.  
 
-**load.py:** Loads the transformed data into the appropriate format (e.g., databases or CSV files).
+  - **load.py:** Loads the transformed data into the appropriate format (e.g., databases or CSV files).  
 
-The parent **init.py** in the **Core** directory initializes the Pipeline Class that orchestrates the ETL process.
+  - The parent **init.py** in the **Core** directory initializes the Pipeline Class that orchestrates the ETL process.  
 
-**Core/database.py:**
-Contains the database schema definitions and manages custom session handling for database operations.
+- **Core/database.py:**
+  Contains the database schema definitions and manages custom session handling for database operations.  
 
-**Core/log_config.py:**
-Provides a configured logging function to ensure consistent logging throughout the project, useful for both debugging and production monitoring.
+- **Core/log_config.py:**
+Provides a configured logging function to ensure consistent logging throughout the project, useful for both debugging and production monitoring.  
 
-**frontend/:**
-Contains the user-facing components. Currently only JavaScript. The files in js/ support interactive elements.
+- **frontend/:**
+Contains the user-facing components. Currently only JavaScript. The files in js/ support interactive elements.  
 
-**index.html:**
-The main HTML file for the frontend interface, included in the root for deployment to Github pages.
+- **index.html:**
+The main HTML file for the frontend interface, included in the root for deployment to Github pages.  
 
-**app.py:**
-Serves as the unified entry point. When run, it instantiates the ETL pipeline (by creating an instance of the Pipeline Class defined in Core/init.py) and calls its .run() method. This script handles both local execution and production deployment seamlessly.
+- **app.py:**
+Serves as the unified entry point. When run, it instantiates the ETL pipeline (by creating an instance of the Pipeline Class defined in Core/init.py) and calls its .run() method. This script handles both local execution and production deployment seamlessly.  
 
-**requirements.txt:**
-Lists all Python dependencies to ensure consistent setup across environments.
+- **.env:**
+Lists required environmental variables for runtime to succeed. Required variables are `ENV = development` for local execution and a `NYC_OPEN_KEY = <yourKeyHere>`
+
+- **requirements.txt:**
+Lists all Python dependencies to ensure consistent setup across environments.  
 
 
 
@@ -187,7 +191,7 @@ Lists all Python dependencies to ensure consistent setup across environments.
 ## Usage
 
 - **Running the Pipeline**:  
-  With your virtual environment activated, simply execute:
+  With your virtual environment activated, your `.env` file setup, and configuration confirmed, simply execute:
   ```bash
   python app.py
   ```
@@ -236,7 +240,6 @@ Lists all Python dependencies to ensure consistent setup across environments.
   - [Flask Documentation](https://flask.palletsprojects.com/)
   - [SQL Alchemy Documentation](https://docs.sqlalchemy.org/en/20/)
   - [Tenacity Documentation](https://tenacity.readthedocs.io/en/latest/)
-  - []
   - README template and guidance inspired by previous projects and ChatGPT assistance.
 
 - **Special Thanks**:  

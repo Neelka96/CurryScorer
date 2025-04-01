@@ -17,7 +17,7 @@ TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory 
 
 # Variable Paths
 if ENV == 'production':
-    STORAGE = Path('/home/site/shared')
+    STORAGE = os.environ.get('STORAGE')
     __DB_PATH__ = os.path.join(STORAGE, 'courier.sqlite')
 else:
     STORAGE = CORE_DIR / 'resources'
