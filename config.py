@@ -18,7 +18,7 @@ TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory 
 # Variable Paths
 if ENV == 'production':
     STORAGE = Path('/home/site/shared')
-    __DB_PATH__ = STORAGE / 'courier.sqlite'
+    __DB_PATH__ = os.path.join(STORAGE, 'courier.sqlite')
 else:
     STORAGE = CORE_DIR / 'resources'
     __DB_PATH__ = STORAGE / 'courier_dev.sqlite'
@@ -29,8 +29,8 @@ DB_CONFIG = {
     'PATH': __DB_PATH__
     ,'ENGINE_URI': f'sqlite:///{__DB_PATH__}'
     ,'UPDATE_INTERVAL': timedelta(weeks = 2)
-    ,'FASTFOOD_CSV': STORAGE / 'fastfood.csv'
-    ,'POPULATION_CSV': STORAGE / 'census_population.csv'
+    ,'FASTFOOD_CSV': os.path.join(STORAGE, 'fastfood.csv')
+    ,'POPULATION_CSV': os.path.join(STORAGE, 'census_population.csv')
 }
 
 # NYC Open API Configuration

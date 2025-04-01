@@ -31,6 +31,10 @@ CurryScorer processes, analyzes, and visualizes data for [insert domain-specific
 - **Visualization Engine**: Generates interactive and static charts.
 - **Unified Execution**: A single command (`python app.py`) launches the entire process, making it simple to run in both development and production environments.
 
+> [!WARNING]  
+> For local execution, please make sure to include your own `.env` file in the root/ with the lines `ENV = 'development'` and `NYC_OPEN_KEY = <yourKeyHere>`.  
+> Additionally, please check to make sure the configuration paths are valid for your system.
+
 ---
 
 ## Installation & Setup
