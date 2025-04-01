@@ -15,22 +15,22 @@ CORE_DIR = Path(__file__).resolve().parent / 'Core'
 TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
-# Variable Paths - Adding comment for test deployment
+# Variable Paths
 if ENV == 'production':
-    STORAGE = os.environ.get('STORAGE')
-    __DB_PATH__ = os.path.join(STORAGE, 'courier.sqlite')
+    STORAGE = Path(os.environ.get('STORAGE', '/home/shared/site'))
+    DB_PATH = STORAGE / 'courier.sqlite'
 else:
     STORAGE = CORE_DIR / 'resources'
-    __DB_PATH__ = STORAGE / 'courier_dev.sqlite'
+    DB_PATH = STORAGE / 'courier_dev.sqlite'
 
 
 # Paths for Persistent Storage Locally & Live
 DB_CONFIG = {
-    'PATH': __DB_PATH__
-    ,'ENGINE_URI': f'sqlite:///{__DB_PATH__}'
+    'PATH': DB_PATH
+    ,'ENGINE_URI': f'sqlite:///{DB_PATH}'
     ,'UPDATE_INTERVAL': timedelta(weeks = 2)
-    ,'FASTFOOD_CSV': os.path.join(STORAGE, 'fastfood.csv')
-    ,'POPULATION_CSV': os.path.join(STORAGE, 'census_population.csv')
+    ,'FASTFOOD_CSV': STORAGE / 'fastfood.csv'
+    ,'POPULATION_CSV': STORAGE / 'census_population.csv'
 }
 
 # NYC Open API Configuration
