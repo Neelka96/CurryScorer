@@ -19,7 +19,7 @@ CORE_DIR = Path(__file__).resolve().parent / 'Core'
 TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
-# Variable Paths
+# Variable Paths - Random comment for test
 DEF_STORAGE = '/mount/shared'
 if ENV == 'production':
     STORAGE = Path(os.environ.get('STORAGE', DEF_STORAGE))
