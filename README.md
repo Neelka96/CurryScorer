@@ -6,7 +6,7 @@
 
 ## Overview
 
-**CurryScorer** is a comprehensive data visualization and ETL project built with Python. The project spans multiple modules that handle data extraction, transformation, and visualization, with the entire process initiated from a single main script. Whether you’re running the project locally during development or deploying it to Azure, the same main entry point takes care of everything.
+**CurryScorer** is designed to extract, transform, and visualize data for a specified domain (e.g., sports analytics, financial trends). The project encapsulates the ETL process and the backend for an interactive dashboard in a unified framework. By simply running the main script, the ETL pipeline is instantiated and executed, and the backend is set up to serve visualizations via a Flask web interface.
 
 ---
 
@@ -18,9 +18,10 @@
     - [Operating Systems](#operating-systems)
     - [Python Dependencies](#python-dependencies)
 4. [Directory Structure & File Breakdown](#directory-structure--file-breakdown)
-5. [Usage](#usage)
-6. [Limitations](#limitations)
-7. [Credits & Citations](#credits--citations)
+5. [Deployment Details](#deployment-details)
+6. [Usage](#usage)
+7. [Limitations](#limitations)
+8. [Credits & Citations](#credits--citations)
 
 ---
 
@@ -30,6 +31,7 @@ CurryScorer processes, analyzes, and visualizes data for [insert domain-specific
 - **ETL Pipeline**: Instantiated and executed directly from the main script.
 - **Visualization Engine**: Generates interactive and static charts.
 - **Unified Execution**: A single command (`python app.py`) launches the entire process, making it simple to run in both development and production environments.
+
 
 *Feel free to delete the database that comes with the cloned repo! Just be sure to include your own `NYC_OPEN_KEY` in the `.env` file!*
 
@@ -97,7 +99,6 @@ CurryScorer processes, analyzes, and visualizes data for [insert domain-specific
 - **Python Version**: 3.8 or higher (tested on Python 3.12)
 - **Key Libraries**:
   - `pandas`
-  - `numpy`
   - `requests`
   - `Flask`
   - `Flask_CORS`
@@ -188,9 +189,19 @@ Lists required environmental variables for runtime to succeed. Required variable
 - **requirements.txt:**
 Lists all Python dependencies to ensure consistent setup across environments.  
 
+---  
 
+## Deployment Details
+**Backend Deployment:**  
+The backend is deployed live to Azure at https://curryscorer.azurewebsites.net. The Flask app hosted on Azure serves the dashboard using the components in Core/backend/.
 
----
+**Frontend Deployment:**  
+The frontend is hosted via GitHub Pages, with index.html and associated JavaScript files in the frontend/ directory providing a clean and responsive user interface.
+
+**Database Sharing & Concurrency Control:**  
+To ensure that all instances of the web app use a single instance of the database, a file share in an Azure Storage Account is linked to the web app. This integration guarantees a centralized courier_dev.sqlite database even when the web app scales across multiple instances. Future enhancements will include implementing a locking mechanism to prevent multiple simultaneous updates, ensuring data integrity during concurrent operations.  
+
+---  
 
 ## Usage
 
@@ -199,30 +210,39 @@ Lists all Python dependencies to ensure consistent setup across environments.
   ```bash
   python app.py
   ```
-  This command instantiates the ETL pipeline, runs the data processing and visualization generation, and handles any additional logic (including deployment readiness) automatically.
+  This command:
+
+Instantiates the ETL pipeline and executes the data extraction, transformation, and loading steps.
+
+Sets up the Flask backend to serve the dashboard, making it accessible via the live Azure URL.
+
+Ensures that both the backend and frontend deployments are in sync with the central database file share.
 
 ---
 
 ## Limitations
 
-- **Manual Data Dependency**  
+- **Manual Data Dependency:**  
   + The Extraction phase currently doesn't have a siphon for live census data, so instead manually extraction was leveraged to build the necessary CSV file.
   + Cuisine constants are currently hard coded in configuration, later updates should include a path for extracting what are actually considered to be "ethnic cuisines".
 
-- **Data Volume**:  
+- **Data Volume:**  
   The ETL pipeline is optimized for moderate-sized datasets. Extremely large datasets might require further optimization or integration with distributed processing tools.
 
-- **Coupled ETL & Flask App**
+- **Coupled ETL & Flask App:**
   The Flask App is currently dependent on the insurance provided by the ETL Pipeline's instantiation. Later updates will de-couple and schedule ETL as a separate task.
 
-- **Manual Configuration**:  
+- **Manual Configuration:**  
   Some settings (e.g., file paths for raw and processed data) may need manual adjustments depending on your environment.
 
-- **Error Handling**:  
+- **Error Handling:**  
   While the pipeline is designed to be robust, additional logging and error handling might be necessary for production-level deployments.
 
-- **Python Dependency Upgrades**:  
+- **Python Dependency Upgrades:**  
   Future upgrades to dependencies should be tested thoroughly to ensure compatibility across modules.
+
+- **Concurrency Control:**  
+Currently, a file share is used to centralize the database among multiple instances. A more advanced locking mechanism is planned to prevent concurrent update issues.
 
 ---
 

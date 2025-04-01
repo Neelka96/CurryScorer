@@ -25,7 +25,7 @@ if ENV == 'production':
     # STORAGE = Path(os.environ.get('STORAGE', DEF_STORAGE))
     STORAGE = DEF_STORAGE
     DB_PATH = STORAGE / 'courier.sqlite'
-elif ENV == 'deployment':
+elif ENV == 'development':
     STORAGE = CORE_DIR / 'resources'
     DB_PATH = STORAGE / 'courier_dev.sqlite'
 elif ENV is None:
