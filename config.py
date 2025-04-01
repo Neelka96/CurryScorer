@@ -4,11 +4,15 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
+# Bring in custom logger
+from Core.log_config import init_log
+log = init_log(__name__)
+
 
 # GRABBING ENV VARIABLES
 load_dotenv()
 ENV = os.environ.get('ENV', 'development')  # Retrieved ENV value for dev/production
-
+log.debug(f'Environment variables loaded in. Current env is {ENV}.')
 
 # Non Variable Paths
 CORE_DIR = Path(__file__).resolve().parent / 'Core'
@@ -16,13 +20,17 @@ TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory 
 
 
 # Variable Paths
+DEF_STORAGE = '/home/site/shared'
 if ENV == 'production':
-    STORAGE = Path(os.environ.get('STORAGE', '/home/shared/site'))
+    STORAGE = Path(os.environ.get('STORAGE', DEF_STORAGE))
     DB_PATH = STORAGE / 'courier.sqlite'
 else:
     STORAGE = CORE_DIR / 'resources'
     DB_PATH = STORAGE / 'courier_dev.sqlite'
+log.debug(f'(Storage, DataBase) Paths => ({STORAGE}, {DB_PATH})')
 
+if ENV == 'production' and STORAGE != DEF_STORAGE:
+    log.warning(f'Production storage path is incorrect: {STORAGE}')
 
 # Paths for Persistent Storage Locally & Live
 DB_CONFIG = {
