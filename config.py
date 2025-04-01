@@ -20,7 +20,7 @@ TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory 
 
 
 # Variable Paths
-DEF_STORAGE = '/home/site/shared'
+DEF_STORAGE = '/mount/shared'
 if ENV == 'production':
     STORAGE = Path(os.environ.get('STORAGE', DEF_STORAGE))
     DB_PATH = STORAGE / 'courier.sqlite'
@@ -29,7 +29,7 @@ else:
     DB_PATH = STORAGE / 'courier_dev.sqlite'
 log.info(f'(Storage, DataBase) Paths => ({STORAGE}, {DB_PATH})')
 
-if ENV == 'production' and STORAGE != DEF_STORAGE:
+if ENV == 'production' and STORAGE != Path(DEF_STORAGE):
     log.warning(f'Production storage path is incorrect: {STORAGE}')
 
 
