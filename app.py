@@ -1,28 +1,38 @@
-from Core import Pipeline
-from Core.backend import app
-import config as C
+# from Core import Pipeline
+# from Core.backend import app
+# import config as C
 
-# Global variable to stop double execution
-_has_executed = False
 
-def runPipeline():
-    global _has_executed
-    if not _has_executed:
-        Pipeline(C.DB_CONFIG, C.API_CONFIG, C.REF_SEQS).run()
-        _has_executed = True
-    return None
+# # Global variable to stop double execution
+# _has_executed = False
 
-# Run with app_context to try to execute on top of app declaration
-with app.app_context():
-    # Run All DB Tests and Ops
-    runPipeline()
+# # Function safety wrapper for object instantiation only once
+# def runPipeline():
+#     global _has_executed
+#     if not _has_executed:
+#         Pipeline(C.DB_CONFIG, C.API_CONFIG, C.REF_SEQS).run()
+#         _has_executed = True
+#     return None
 
-app
+# # Run with app_context to try to execute on top of app declaration
+# with app.app_context():
+#     # Run All DB Tests and Ops
+#     runPipeline()
+
+# app
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Hello World'
 
 
 if __name__ == '__main__':
     # Run All DB Tests and Ops
-    runPipeline()
+    pass
+    # runPipeline()
 
-    # Serve up flask API
-    app.run(debug = False, use_reloader = False)
+    # # Serve up flask API
+    # app.run(debug = False, use_reloader = False)
