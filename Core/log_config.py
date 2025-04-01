@@ -1,6 +1,5 @@
 # Import dependencies
 import logging as log
-import sys
 
 
 def init_log(
@@ -27,7 +26,7 @@ def init_log(
     logger.setLevel(log.INFO)
     
     # Create a stream handler (logs to console)
-    ch = log.StreamHandler(sys.stdout)
+    ch = log.StreamHandler()
     ch.setLevel(log.INFO)
     
     # Create a formatter with date/time, logger name, level, and message

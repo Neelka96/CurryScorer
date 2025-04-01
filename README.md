@@ -222,18 +222,18 @@ SQLAlchemy’s context managers are used to guarantee that sessions are properly
 
 ## Usage
 
-- **Running the Pipeline**:  
+**Running the Pipeline**:  
   With your virtual environment activated, your `.env` file setup, and configuration confirmed, simply execute:
   ```bash
   python app.py
   ```
   This command:
 
-Instantiates the ETL pipeline and executes the data extraction, transformation, and loading steps.
+- Instantiates the ETL pipeline and executes the data extraction, transformation, and loading steps.
 
-Sets up the Flask backend to serve the dashboard, making it accessible via the live Azure URL.
+- Sets up the Flask backend to serve the dashboard, making it accessible via the live Azure URL.
 
-Ensures that both the backend and frontend deployments are in sync with the central database file share.
+- Ensures that both the backend and frontend deployments are in sync with the central database file share.
 
 ---
 
@@ -266,10 +266,10 @@ Currently, a file share is used to centralize the database among multiple instan
 ## Credits & Citations
 
 - **Project Contributors**:  
-  - Neel Agarwal
-  - Manny Guevara
-  - Rob LaPreze
-  - Samora Machel
+  - [Neel Agarwal](https://github.com/neelka96)
+  - [Manny Guevara](https://github.com/MannyHub24)
+  - [Rob LaPreze](https://github.com/rlapreze2)
+  - [Samora Machel](https://github.com/samora90)
 
 - **Key References & Documentation**:  
   - [New York City Open Data](https://opendata.cityofnewyork.us/)
