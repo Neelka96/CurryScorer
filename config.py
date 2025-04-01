@@ -27,10 +27,11 @@ if ENV == 'production':
 else:
     STORAGE = CORE_DIR / 'resources'
     DB_PATH = STORAGE / 'courier_dev.sqlite'
-log.debug(f'(Storage, DataBase) Paths => ({STORAGE}, {DB_PATH})')
+log.info(f'(Storage, DataBase) Paths => ({STORAGE}, {DB_PATH})')
 
 if ENV == 'production' and STORAGE != DEF_STORAGE:
     log.warning(f'Production storage path is incorrect: {STORAGE}')
+
 
 # Paths for Persistent Storage Locally & Live
 DB_CONFIG = {

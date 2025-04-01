@@ -31,8 +31,12 @@ CurryScorer processes, analyzes, and visualizes data for [insert domain-specific
 - **Visualization Engine**: Generates interactive and static charts.
 - **Unified Execution**: A single command (`python app.py`) launches the entire process, making it simple to run in both development and production environments.
 
+*Feel free to delete the database that comes with the cloned repo! Just be sure to include your own `NYC_OPEN_KEY` in the `.env` file!*
+
 > [!WARNING]  
-> For local execution, please make sure to include your own `.env` file in the root/ with the lines `ENV = 'development'` and `NYC_OPEN_KEY = <yourKeyHere>`.  
+> For local execution, please make sure to include your own `.env` file in the root/ with the lines:  
+>   `ENV = 'development'` and  
+>   `NYC_OPEN_KEY = <yourKeyHere>`  
 > Additionally, please check to make sure the configuration paths are valid for your system.
 
 ---
@@ -147,7 +151,7 @@ CurryScorer/
 ### Explanation of File & Directory Connections
 
 - **Core/resources/:**
-Contains essential data files. The required census_population.csv is used for data ingestion, while optional files like courier_dev.sqlite and fastfood.csv support extended functionalities.  
+Contains essential data files. The required census_population.csv is used for data ingestion, while optional files like courier_dev.sqlite and fastfood.csv support extended functionalities. For a different experience, feel free to delete the SQLite DataBase that is included in the `Core/resources` of this repository when cloned! If that's the case the `.env` API `NYC_OPEN_KEY` is even more important to be included in the root of this cloned repo when running as it won't be able to proceed without it.
 
 - **Core/backend/:**
 Houses the Flask backend components. The templates/ directory contains HTML templates (currently just home.html), while init.py and backend.py set up and manage the backend service.  
