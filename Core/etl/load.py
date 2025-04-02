@@ -1,74 +1,127 @@
 # Import dependencies
 import pandas as pd
-from sqlalchemy import Table, select, insert, delete
-from sqlalchemy.orm import Session, sessionmaker
-from typing import Any
+from sqlalchemy import select, insert
+from sqlalchemy.orm import DeclarativeMeta
+from datetime import datetime as dt, timedelta as td
 
-# Loading File
+# Import subpackage dependencies
+from Core.database import Boroughs, Restaurants, get_session, execute_query
 
-def freshTable(
-        Session: sessionmaker[Session]
-        ,tableClass: Table
+# Bring in custom logger
+from Core.log_config import init_log
+log = init_log(__name__)
+
+
+def fresh_table(
+        tableClass: DeclarativeMeta
         ,df: pd.DataFrame
         ) -> int:
-    '''
-    Deletes all existing data in the specified table and inserts new data from the provided DataFrame. 
-    Only meant to be used the first time creating the reference tables and the main table. After that, only for the Restaurant table.
+    '''Creates new table, expects blank table.
 
     Args:
-        Session (sessionmaker[Session]): A session maker bound to an engine with configurations already, for accessing through the ORM Layer.
-        tableClass (Table): The SQLAlchemy table class to create.
-        df (pd.DataFrame): The DataFrame containing the new data to insert.
+        tableClass (DeclarativeMeta): Staged table.
+        df (pd.DataFrame): Data to write to table.
 
     Returns:
-        int: Returns 0 upon successful run.
-
-    Raises:
-        RuntimeError: If the table cannot be refreshed due to an error.
+        int: Rows changed.
     '''
-    try:
-        # Try to delete the table and insert it from scratch
-        with Session() as session:
-            session.execute(delete(tableClass))
-            stmt = insert(tableClass)
-            vals = df.to_dict('records')
-            session.execute(stmt, vals)
-            session.commit()
-        return 0
-    except Exception as e:
-        raise RuntimeError(f'Could not build Fresh Table: {e}')
+    log.debug('Building fresh table.')
+    try:    # Try to delete the table and insert it from scratch
+        stmt = insert(tableClass)
+        vals = df.to_dict('records')
+        execute_query(stmt, vals) # Combining of insert() from core w/ session.execute() utilizes ORM layer
+        log.debug('Table built successfully.')
+        return f'{len(vals)} rows added.'
+    except Exception:
+        log.critical('Could not build fresh table.', exc_info = True)
+        raise
 
 
-def updatePopulation(
-        Session: sessionmaker[Session]
-        ,tableClass: Table
-        ,data_map: dict[str, Any]
+def delete_expiredRows(
+        tableClass: type[Restaurants]
+        ,cutoff_years: int
         ) -> int:
-    '''
-    Updates the Borough's Table population column. Relies on passing of Table class even if it seems arbitrary.
+    '''Deletes expired rows from child table.
 
     Args:
-        Session (sessionmaker[Session]): A session maker bound to an engine with configurations already, for accessing through the ORM Layer.
-        tableClass (Table): The SQLAlchemy Table class to modify. Always needs to be `Boroughs` Table.
-        data_map (dict[str, Any]): A dictionary containing mappings of borough name to population value used for updating.
-    
+        tableClass (type[Restaurants]): Staged table.
+        cutoff_years (int): Max number of years before cutoff.
+
     Returns:
-        int: Returns 0 upon successful run.
-    
-    Raises:
-        RuntimeError: If the table cannot be updated due to an error.
+        int: Rows changed.
     '''
+    log.debug('Deleting expired rows.')
+    cutoff_date = dt.now() - td(days = cutoff_years * 365)
     try:
-        # Try to update table based on borough names to new population values
-        with Session() as session:
-            for boro_name, data in data_map.items():
-                stmt = select(tableClass).where(tableClass.borough == boro_name)
-                row = session.execute(stmt).scalar_one()
-                row.population = data
-                session.commit()
-        return 0
-    except Exception as e:
-        raise RuntimeError(f'Could not update {tableClass}: {e}')
+        with get_session() as session:
+            stmt = select(tableClass).where(tableClass.inspection_date < cutoff_date)
+            restaurants = session.scalars(stmt).all()
+            [session.delete(r) for r in restaurants]
+        log.debug('Rows deleted successfully.')
+        return f'{len(restaurants)} rows deleted.'
+    except Exception:
+        log.critical('Could not delete expired rows.', exc_info = True)
+        raise
+
+
+def update_restaurants(
+        tableClass: type[Restaurants]
+        ,data_df: pd.DataFrame
+        ) -> int:
+    '''Updated rows from child table.
+
+    Args:
+        tableClass (type[Restaurants]): Staged table.
+        data_df (pd.DataFrame): Data for writing to table.
+
+    Returns:
+        int: Rows changed.
+    '''
+    log.debug('Updating rows.')
+    try:
+        with get_session() as session:
+            rows_affected = 0
+            for _, row in data_df.iterrows():
+                stmt = select(tableClass).where(tableClass.id == row['id'])
+                existing_row = session.execute(stmt).scalar_one_or_none()
+                if existing_row is None:
+                    session.add(tableClass(**row.to_dict())) 
+                    rows_affected += 1
+        log.debug('Rows updated successfully.')
+        return f'{rows_affected} rows updated.'
+    except Exception:
+        log.critical('Could not update rows.', exc_info = True)
+        raise
+
+
+def update_population(
+        tableClass: type[Boroughs]
+        ,data_df: pd.DataFrame
+        ) -> int:
+    '''Updates rows from parents table.
+
+    Args:
+        tableClass (type[Boroughs]): Staged table.
+        data_df (pd.DataFrame): Data for writing to table.
+
+    Returns:
+        int: Rows changed.
+    '''
+    log.debug('Updating rows.')
+    try:    # Try to update table based on borough names to new population values
+        with get_session() as session:
+            rows_affected = 0
+            for _, r in data_df.iterrows():
+                stmt = select(tableClass).where(tableClass.borough == r['borough'])
+                result = session.execute(stmt).scalar_one_or_none()
+                if result:
+                    result.population = r['population']
+                    rows_affected += 1
+        log.debug('Rows updated successfully.')
+        return f'{rows_affected} rows updated.'
+    except Exception:
+        log.critical('Could not update rows.', exc_info = True)
+        raise
 
 
 # EOF
