@@ -11,7 +11,7 @@ def runPipeline():
     global _has_executed
     if not _has_executed:
         log_path = C.STORAGE / 'app.log'
-        Pipeline(C.DB_CONFIG, C.API_CONFIG, C.REF_SEQS, C.STORAGE).run()
+        Pipeline(C.DB_CONFIG, C.API_CONFIG, C.REF_SEQS, log_path).run()
         _has_executed = True
     return None
 
