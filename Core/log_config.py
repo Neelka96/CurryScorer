@@ -1,26 +1,21 @@
 # Import dependencies
 import logging as log
-import sys
-
-# Import configuration
-import config as C
 
 def init_log(
         name: str = None
-        ,file_out: bool = False
+        ,log_level: int | str = log.INFO
+        ,file: str = 'app.log'
         ) -> log.Logger:
     '''Creates centralized logger.
 
     Args:
         name (str, optional): Defaults to None.
-        file_out (bool, optional): Defaults to False.
+        log_level (int, optional): Defaults to `log.INFO`. Levels are 0, 10, 20, 30, 40, 50.
+        file (str, optional): Defaults to `app.log`
 
     Returns:
         log.Logger: Master logger for project. 
     '''
-    # Logging level
-    _level = log.INFO
-
     # Create or get the logger
     logger = log.getLogger(name)
     
@@ -29,11 +24,11 @@ def init_log(
         return logger
 
     # Set the log level to INFO
-    logger.setLevel(_level)
+    logger.setLevel(log_level)
     
     # Create a stream handler (logs to console)
     ch = log.StreamHandler()
-    ch.setLevel(_level)
+    ch.setLevel(log_level)
     
     # Create a formatter with date/time, logger name, level, and message
     formatter = log.Formatter(
@@ -45,10 +40,10 @@ def init_log(
     # Add the handler to the logger
     logger.addHandler(ch)
 
-    if file_out:
+    if file:
         # Add a file handler to log messages to a file
-        fh = log.FileHandler('app.log')
-        fh.setLevel(_level)
+        fh = log.FileHandler(file)
+        fh.setLevel(log_level)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
     

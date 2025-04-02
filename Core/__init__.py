@@ -17,6 +17,7 @@ class Pipeline():
             ,db_config: dict[str, Path | str | td]
             ,api_config: dict[str, int | str]
             ,ref_seqs: dict[str, tuple]
+            ,log_file: Path | str
             ):
         '''
         ETL Pipeline for managing the CurryScorer database.
@@ -31,7 +32,7 @@ class Pipeline():
             ref_seqs (dict): Reference sequences for transformations.
             data (dict): Stores intermediate datasets during the ETL process.
         '''
-        self.log = init_log(__name__, file_out = True)
+        self.log = init_log(__name__, file = log_file)
         self.log.info('Initializing pipeline.')
         self.db_config = db_config
         self.api_config = api_config
