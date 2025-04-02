@@ -15,10 +15,12 @@ def runPipeline():
         _has_executed = True
     return None
 
+
 # Run with app_context to try to execute on top of app declaration
 with app.app_context():
     # Run All DB Tests and Ops
     runPipeline()
+
 
 # Exposing Flask App for Azure Deployment
 app
