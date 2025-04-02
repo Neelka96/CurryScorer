@@ -1,112 +1,130 @@
-# Configuration File
-
 # Import dependencies
 import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
-################################################################################################################################################
-# VERY IMPORTANT: UPDATE INTERVAL, PLEASE SPECIFY AS TIMEDELTA OBJECT
-# (If you're not familiar with timedelta objects, hover over the class for a hint, or put a comma after the `2` in `weeks = 2` for more info)
-UPDATE_INTERVAL = timedelta(weeks = 2)
-################################################################################################################################################
+# Bring in custom logger
+from Core.log_config import init_log
+log = init_log(__name__)
 
-################################################################################################################################################
+
 # GRABBING ENV VARIABLES
 load_dotenv()
-NYC_OPEN_KEY = os.environ.get('NYC_OPEN_KEY')
-CENSUS_KEY = os.environ.get('CENSUS_KEY')
-################################################################################################################################################
+ENV = os.environ.get('ENV', 'development')  # Retrieved ENV value for dev/production
+log.info(f'Environment variables loaded. ENV is {ENV}.')
 
-# Paths
-ROOT_DIR = Path(__file__).resolve().parent
-TEMPLATE_DIR = ROOT_DIR / 'templates'   # Flask Templates Directory for HTML Rendering 
-
-HOME_DIR = Path('/home')
-FASTFOOD_CSV = HOME_DIR / 'fastfood.csv'    # CSV PATH: data/fastfood.csv
-# POPULATION_CLEAN = HOME_DIR / 'census_population.csv'   # CSV PATH: data/census_population.csv
-# TESTING MOVE POPULATION DATA TO ROOT FOR NOW TO SEE HOW '/HOME' RESPONDS
-POPULATION_CLEAN = ROOT_DIR / 'census_population.csv'
-
-DB_PATH = HOME_DIR / 'courier.sqlite'
-ENGINE_URI = f'sqlite:///{DB_PATH}'
+# Non Variable Paths
+CORE_DIR = Path(__file__).resolve().parent / 'Core'
+TEMPLATE_DIR = CORE_DIR / 'backend' / 'templates'   # Flask Templates Directory for HTML Rendering 
 
 
-# Filter Constants
-ROW_LIMIT = 200000  # Max limit for rows returned by API
-INSPECTION_CUTOFF = 2   # In years, describes max years allowed since last inspection.
+# Variable Paths
+DEF_STORAGE = Path('/mnt/shared')
+if ENV == 'production':
+    STORAGE = DEF_STORAGE
+    DB_PATH = STORAGE / 'courier.sqlite'
+elif ENV == 'development':
+    STORAGE = CORE_DIR / 'resources'
+    DB_PATH = STORAGE / 'courier_dev.sqlite'
+elif ENV is None:
+    log.critical('No ENV environment variable has been declared. Be advised - emergency routes being used.')
+    STORAGE = CORE_DIR / 'resources'
+    DB_PATH = STORAGE / 'courier_dev.sqlite'
+
+if ENV == 'production' and STORAGE != DEF_STORAGE:
+    log.critical(f'Production storage path is incorrect: {STORAGE}')
+
+# Logs Storage & DataBase Paths for environment integrity
+log.info(f'Storage: {STORAGE}') if len(STORAGE.parts) <= 2 else log.info(f'Storage: .../{STORAGE.parts[-2]}/{STORAGE.parts[-1]}')
+log.info(f'DataBase: {DB_PATH.name}')
 
 
-# API Constants
-SLEEP_TIME = 10  # In seconds, sleep time between two different API calls for a similar website - only needed during init db construction.
-API_TIMEOUT = 15    # In seconds, requests.get() request timeout cutoff.
-API_RETRY = 2   # Number of retries for API calls - used in core get_df() function.
-API_DELAY = 10  # In seconds, delay upon retry before another request is sent out.
+# Paths for Persistent Storage Locally & Live
+DB_CONFIG = {
+    'PATH': DB_PATH
+    ,'ENGINE_URI': f'sqlite:///{DB_PATH}'
+    ,'UPDATE_INTERVAL': timedelta(weeks = 2)
+    ,'FASTFOOD_CSV': STORAGE / 'fastfood.csv'
+    ,'POPULATION_CSV': STORAGE / 'census_population.csv'
+}
+
+# NYC Open API Configuration
+API_CONFIG = {
+    'KEY': os.environ.get('NYC_OPEN_KEY')   # Retrieve NYC Open Key
+    ,'ROW_LIMIT': 200000     # Max limit for rows returned by API
+    ,'DATE_CUTOFF': 2   # In years, describes max years allowed since last inspection.
+    ,'TIMEOUT': 15  # In seconds, requests.get() request timeout cutoff.
+    ,'RETRY': 2     # Number of retries for API calls - used in core get_df() function.
+    ,'DELAY': 10    # In seconds, delay upon retry before another request is sent out.
+    ,'SLEEP': 10    # In seconds, sleep time between two different API calls for a similar website - only needed during init db construction.
+}
 
 
 # Transformation Constants
-BOROUGHS = (
-    'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island'
-)
+REF_SEQS = {
+    'BOROUGHS': (
+        'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island'
+    )
+    ,'CUISINES': (
+        'Afghan'
+        ,'African'
+        ,'Armenian'
+        ,'Australian'
+        ,'Bangladeshi'
+        ,'Basque'
+        ,'Brazilian'
+        ,'Cajun'
+        ,'Californian'
+        ,'Caribbean'
+        ,'Chilean'
+        ,'Chinese'
+        ,'Chinese/Japanese'
+        ,'Creole'
+        ,'Creole/Cajun'
+        ,'Czech'
+        ,'Eastern European'
+        ,'Egyptian'
+        ,'English'
+        ,'Ethiopian'
+        ,'Filipino'
+        ,'French'
+        ,'German'
+        ,'Greek'
+        ,'Haute Cuisine'
+        ,'Hawaiian'
+        ,'Indian'
+        ,'Indonesian'
+        ,'Iranian'
+        ,'Irish'
+        ,'Italian'
+        ,'Japanese'
+        ,'Jewish/Kosher'
+        ,'Korean'
+        ,'Latin American'
+        ,'Lebanese'
+        ,'Mediterranean'
+        ,'Mexican'
+        ,'Middle Eastern'
+        ,'Moroccan'
+        ,'New French'
+        ,'Pakistani'
+        ,'Peruvian'
+        ,'Polish'
+        ,'Portuguese'
+        ,'Russian'
+        ,'Scandinavian'
+        ,'Soul Food'
+        ,'Southeast Asian'
+        ,'Spanish'
+        ,'Tapas'
+        ,'Thai'
+        ,'Turkish'
+    )
+}
 
-CUISINES = (
-    'Afghan',
-    'African',
-    'American',
-    'Armenian',
-    'Australian',
-    'Bangladeshi',
-    'Basque',
-    'Brazilian',
-    'Cajun',
-    'Californian',
-    'Caribbean',
-    'Chilean',
-    'Chinese',
-    'Chinese/Japanese',
-    'Creole',
-    'Creole/Cajun',
-    'Czech',
-    'Eastern European',
-    'Egyptian',
-    'English',
-    'Ethiopian',
-    'Filipino',
-    'French',
-    'German',
-    'Greek',
-    'Haute Cuisine',
-    'Hawaiian',
-    'Indian',
-    'Indonesian',
-    'Iranian',
-    'Irish',
-    'Italian',
-    'Japanese',
-    'Jewish/Kosher',
-    'Korean',
-    'Latin American',
-    'Lebanese',
-    'Mediterranean',
-    'Mexican',
-    'Middle Eastern',
-    'Moroccan',
-    'New French',
-    'Pakistani',
-    'Peruvian',
-    'Polish',
-    'Portuguese',
-    'Russian',
-    'Scandinavian',
-    'Soul Food',
-    'Southeast Asian',
-    'Spanish',
-    'Tapas',
-    'Thai',
-    'Turkish'
-)
 
+# EOF
 
 if __name__ == '__main__':
     print('This module is intended to be imported, not run directly.')

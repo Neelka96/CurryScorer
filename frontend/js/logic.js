@@ -1,174 +1,153 @@
-
-
-const mapData = [
-  {
-    id: 1,
-    name: "Restaurant A",
-    lat: 40.7128,
-    lng: -74.0060,
-    borough: "Manhattan",
-    cuisine: "Italian",
-    inspection_date: "2025-03-01T00:00:00"
-  },
-  {
-    id: 2,
-    name: "Restaurant B",
-    lat: 40.6782,
-    lng: -73.9442,
-    borough: "Brooklyn",
-    cuisine: "Chinese",
-    inspection_date: "2025-03-02T00:00:00"
-  }
-];
-
-const topCuisinesData = [
-  { cuisine: "Italian", count: 30 },
-  { cuisine: "Chinese", count: 20 },
-  { cuisine: "Mexican", count: 15 }
-];
-
-const cuisineDistributionData = [
-  { cuisine: "Italian", count: 50, percentage: 30 },
-  { cuisine: "Chinese", count: 40, percentage: 24 },
-  { cuisine: "Mexican", count: 35, percentage: 21 },
-  { cuisine: "Indian", count: 25, percentage: 15 },
-  { cuisine: "Other", count: 10, percentage: 10 }
-];
-
-const boroughSummaryData = [
-  { borough: "Manhattan", restaurant_count: 100, average_rating: 4.1, restaurants_per_capita: 0.012 },
-  { borough: "Brooklyn", restaurant_count: 150, average_rating: 4.0, restaurants_per_capita: 0.010 },
-  { borough: "Bronx", restaurant_count: 80, average_rating: 3.8, restaurants_per_capita: 0.008 },
-  { borough: "Queens", restaurant_count: 120, average_rating: 3.9, restaurants_per_capita: 0.009 },
-  { borough: "Staten Island", restaurant_count: 40, average_rating: 4.2, restaurants_per_capita: 0.005 }
-];
-
 // ==================
 // Leaflet Map Setup
 // ==================
 
-const map = L.map('map').setView([40.7128, -74.0060], 11);
+home_url = 'https://curryscorer.azurewebsites.net/api/v1.0/'
+map_url = home_url + 'map'
+bar_url = home_url + 'top-cuisines?borough='
+pie_url = home_url + 'cuisine-distributions'
+table_url = home_url + 'borough-summaries'
+
+const map = L.map('map').setView([40.7128, -74.0060], 9);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-mapData.forEach(loc => {
-  L.marker([loc.lat, loc.lng])
-    .addTo(map)
-    .bindPopup(`<b>${loc.name}</b><br>Borough: ${loc.borough}<br>Cuisine: ${loc.cuisine}<br>Inspected: ${new Date(loc.inspection_date).toLocaleDateString()}`);
-});
+
+d3.json(map_url).then(data => {
+  // Create a marker cluster group
+  const markers = L.markerClusterGroup();
+  const results = data.results;
+
+  for (let i = 0; i < results.length; i++) {
+    let loc = results[i];
+
+    if (loc) {
+      markers
+        .addLayer(
+          L.marker([loc.lat, loc.lng])
+            .bindPopup(
+              `<b>${loc.name}</b><br>Borough: ${loc.borough}<br>Cuisine: ${loc.cuisine}<br>Inspected: ${new Date(loc.inspection_date).toLocaleDateString()}`
+            )
+          );
+      };
+    };
+  map.addLayer(markers);
+  }
+);
 
 // ==================
 // Bar Chart (Plotly)
 // ==================
 
-const boroughCuisineData = {
-  Manhattan: [
-    { cuisine: 'Italian', count: 120 },
-    { cuisine: 'Chinese', count: 95 },
-    { cuisine: 'American', count: 80 }
-  ],
-  Brooklyn: [
-    { cuisine: 'Caribbean', count: 110 },
-    { cuisine: 'Mexican', count: 90 },
-    { cuisine: 'American', count: 85 }
-  ],
-  Queens: [
-    { cuisine: 'Indian', count: 100 },
-    { cuisine: 'Chinese', count: 95 },
-    { cuisine: 'Korean', count: 80 }
-  ]
-};
 
-// Extract borough names
-const boroughs = Object.keys(boroughCuisineData);
+// List borough names needed
+const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
 
-// Create initial trace (default: Manhattan)
-const defaultBorough = boroughs[0];
-const initialData = boroughCuisineData[defaultBorough];
+// Function to perform API call and plot the data
+function updatePlot(borough) {
+  d3.json(bar_url + borough).then(data => {
+    let results = data.results
+    results = results.slice(0, 10);
+    
+    // Prepare the trace for the bar chart
+    const barTrace = {
+      x: results.map(item => item.cuisine),
+      y: results.map(item => item.count),
+      type: 'bar',
+      marker: {
+        color: 'rgba(55,128,191,0.7)',
+        line: { color: 'rgba(55,128,191,1.0)', width: 2 }
+      }
+    };
 
-const barTrace = {
-  x: initialData.map(item => item.cuisine),
-  y: initialData.map(item => item.count),
-  type: 'bar',
-  marker: {
-    color: 'rgba(55,128,191,0.7)',
-    line: { color: 'rgba(55,128,191,1.0)', width: 2 }
-  }
-};
+    // Define the layout with a dynamic title
+    const barLayout = {
+      title: `Top Cuisines in ${borough}`,
+      xaxis: {
+        title: 'Cuisine',
+        tickangle: 45 
+      },
+      yaxis: { title: 'Count' }
+    };
 
-// Create dropdown menu options
-const updatemenus = [
-  {
-    buttons: boroughs.map(borough => ({
-      method: 'update',
-      label: borough,
-      args: [
-        [{
-          x: [boroughCuisineData[borough].map(item => item.cuisine)],
-          y: [boroughCuisineData[borough].map(item => item.count)]
-        }],
-        { title: `Top Cuisines in ${borough}` }
-      ]
-    })),
-    direction: 'down',
-    showactive: true,
-    x: 0,
-    xanchor: 'left',
-    y: 1.15,
-    yanchor: 'top'
-  }
-];
+    // Use Plotly.react to update the chart if it exists, or create it if not
+    Plotly.react('barChart', [barTrace], barLayout);
+  }).catch(error => {
+    console.error('Error fetching data:', error);
+  });
+}
 
-const barLayout = {
-  title: `Top Cuisines in ${defaultBorough}`,
-  xaxis: { title: 'Cuisine' },
-  yaxis: { title: 'Count' },
-  updatemenus: updatemenus
-};
+// Event listener for the dropdown to update the plot on selection change
+document.getElementById('boroughSelect').addEventListener('change', function() {
+  const selectedBorough = this.value;
+  updatePlot(selectedBorough);
+});
 
-Plotly.newPlot('barChart', [barTrace], barLayout);
+// Run the function on initial load for the default borough
+updatePlot('Manhattan');
+
 
 // ==================
 // Pie Chart (Plotly)
 // ==================
+d3.json(pie_url).then(data => {
+  // Limit to top 10 or 15 to avoid too many slices
+  let results = data.results.slice(0, 10);
 
-const pieTrace = {
-  labels: cuisineDistributionData.map(item => item.cuisine),
-  values: cuisineDistributionData.map(item => item.percentage),
-  type: 'pie',
-  textinfo: 'label+percent',
-  hoverinfo: 'label+percent+value',
-  domain: {
-    x: [0, 1], // full width
-    y: [0, 1]  // full height
-  }
-};
+  // Optionally group very small slices into an "Other" category
+  // This is just an example – adapt as needed
+  // const threshold = 2; // 2%
+  // const mainSlices = results.filter(d => d.percent >= threshold);
+  // const otherSlices = results.filter(d => d.percent < threshold);
+  // if (otherSlices.length > 1) {
+  //   const otherSum = otherSlices.reduce((acc, cur) => acc + cur.percent, 0);
+  //   mainSlices.push({ cuisine: 'Other', percent: otherSum });
+  // }
+  // results = mainSlices;
 
-const pieLayout = {
-  title: 'Cuisine Distribution in NYC',
-  height: 400, // Increase overall chart height
-  width: 400,  // Increase overall chart width
-  margin: { t: 40, l: 40, r: 40, b: 40 } 
-};
+  const pieTrace = {
+    labels: results.map(d => d.cuisine),
+    values: results.map(d => d.percent),
+    type: 'pie',
+    hoverinfo: 'label+percent+value',
+    textposition: 'inside',  // put labels outside each slice
+    automargin: true,         // helps with label cutoff
+    marker: {
+      line: { color: '#fff', width: 1 } // thin border between slices
+    },
+    // You can also adjust the domain if you want extra space for a legend on the side:
+    // domain: { x: [0, 0.7], y: [0, 1] }
+  };
 
-Plotly.newPlot('pieChart', [pieTrace], pieLayout);
+  const pieLayout = {
+    title: 'Ethnic Cuisine Distribution',
+    // Give the chart a larger footprint
+    width: 500,
+    height: 400,
+    margin: { t: 40, b: 40, l: 20, r: 20 },
+  };
 
-
+  Plotly.newPlot('pieChart', [pieTrace], pieLayout);
+});
 
 // ==================
 // Borough Summary Table
 // ==================
 
-const tableBody = document.getElementById("boroughTableBody");
+d3.json(table_url).then(data => {
+  let results = data.results;
 
-boroughSummaryData.forEach(row => {
+  const tableBody = document.getElementById("boroughTableBody");
+
+  results.forEach(row => {
+    let perCapita = row.restaurant_count/row.population;
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td>${row.borough}</td>
     <td>${row.restaurant_count}</td>
-    <td>${row.average_rating.toFixed(1)}</td>
-    <td>${row.restaurants_per_capita.toFixed(3)}</td>
+    <td>${perCapita.toFixed(3)}</td>
   `;
   tableBody.appendChild(tr);
 });
+})
 
 
